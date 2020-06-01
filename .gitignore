@@ -3,3 +3,4 @@
 build
 dist
 supertokens_flask.egg-info
+__pycache__

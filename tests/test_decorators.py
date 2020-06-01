@@ -68,7 +68,7 @@ def app():
         return {'userId': g.supertokens_session.get_user_id()}
 
     @app.route('/info', methods=['GET', 'OPTIONS'])
-    @session_required()
+    @session_required
     def info():
         if request.method == 'OPTIONS':
             return jsonify({'method': 'option'})

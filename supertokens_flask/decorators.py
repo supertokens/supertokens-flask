@@ -85,6 +85,10 @@ def session_required(anti_csrf_check=None):
             __manage_cookies_post_response(session, response)
             return response
         return wrapped_function
+    if callable(anti_csrf_check):
+        func = anti_csrf_check
+        anti_csrf_check = None
+        return session_verify(func)
     return session_verify
 
 

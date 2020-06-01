@@ -146,7 +146,7 @@ def testing():
 
 
 @app.route('/logout', methods=['POST', 'OPTIONS'])
-@session_required(True)
+@session_required
 def logout():
     if request.method == 'OPTIONS':
         return send_options_api_response()
