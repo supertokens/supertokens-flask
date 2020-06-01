@@ -20,9 +20,9 @@ extras_require = {
 
 setup(
     name="supertokens_flask",
-    version="0.0.1",
+    version="0.0.2",
     author="Supertokens",
-    license="MIT",
+    license="Apache 2.0",
     author_email="team@supertokens.io",
     description="SuperTokens session management solution for flask",
     long_description=long_description,
@@ -42,7 +42,7 @@ setup(
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    keywords="",
+    keywords="",`
     install_requires=[
         "flask",
         "requests",
