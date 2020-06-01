@@ -42,7 +42,7 @@ setup(
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    keywords="",`
+    keywords="",
     install_requires=[
         "flask",
         "requests",
