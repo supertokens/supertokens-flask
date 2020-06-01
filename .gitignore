@@ -4,3 +4,5 @@ build
 dist
 supertokens_flask.egg-info
 __pycache__
+releasePassword
+apiPassword

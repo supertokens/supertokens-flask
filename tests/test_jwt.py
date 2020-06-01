@@ -38,7 +38,7 @@ def test_jwt_get_payload():
         'alg': 'RS256',
         'typ': 'JWT',
         'version': '2'
-    }, separators=(',', ':')))
+    }, separators=(',', ':'), sort_keys=True))
     msg = header + '.' + payload
     hashed_msg = SHA256.new(msg.encode('utf-8'))
     signer = PKCS115_SigScheme(key_pair)

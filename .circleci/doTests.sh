@@ -29,7 +29,7 @@ responseStatus=`curl -s -o /dev/null -w "%{http_code}" -X PUT \
   -d "{
 	\"password\": \"$SUPERTOKENS_API_KEY\",
 	\"version\":\"$version\",
-    \"name\": \"laravel\",
+    \"name\": \"flask\",
 	\"frontendDriverInterfaces\": $frontendDriverArray,
 	\"coreDriverInterfaces\": $coreDriverArray
 }"`
@@ -94,7 +94,7 @@ then
         -d "{
             \"password\": \"$SUPERTOKENS_API_KEY\",
             \"version\":\"$version\",
-            \"name\": \"laravel\",
+            \"name\": \"flask\",
             \"testPassed\": true
         }"`
     if [ $responseStatus -ne "200" ]

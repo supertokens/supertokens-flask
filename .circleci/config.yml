@@ -15,7 +15,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "46:31:70:29:8c:9b:ab:66:b6:7b:fe:42:9f:45:28:90"
+            - "ef:05:b5:59:f2:35:fa:e9:62:bf:32:33:e1:7c:51:ee"
       - checkout
       - run: apt-get update
       - run: make dev-install

@@ -15,10 +15,12 @@ under the License.
 """
 
 from supertokens_flask.utils import (
-    utf_base64decode
+    utf_base64decode,
+    utf_base64encode
 )
 from json import (
-    loads
+    loads,
+    dumps
 )
 from Crypto.PublicKey import RSA
 from Crypto.Signature.pkcs1_15 import PKCS115_SigScheme
@@ -36,11 +38,11 @@ why separators is used in dumps:
 
 we require the non-spaced version, else the base64 encoding string will end up different than required
 """
-_allowed_headers = [{
+_allowed_headers = [utf_base64encode(dumps({
     'alg': 'RS256',
     'typ': 'JWT',
     'version': '2'
-}]
+}, separators=(',', ':'), sort_keys=True))]
 
 
 def get_payload(jwt, signing_public_key):
@@ -49,8 +51,7 @@ def get_payload(jwt, signing_public_key):
         raise Exception("invalid jwt")
 
     header, payload, signature = splitted_input
-    if loads(utf_base64decode(header)) not in _allowed_headers:
-        exit(0)
+    if header not in _allowed_headers:
         raise Exception("jwt header mismatch")
 
     public_key = RSA.import_key(
