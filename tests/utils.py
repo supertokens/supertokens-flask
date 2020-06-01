@@ -83,8 +83,9 @@ def __stop_st(retry=50):
     if len(process_ids) != 0:
         if retry == 0:
             raise Exception('')
-        sleep(0.25)
+        sleep(0.5)
         __stop_st(retry - 1)
+        sleep(1)
 
 
 def start_st(host='localhost', port='3567'):
@@ -157,7 +158,8 @@ def get_cookie_from_response(response, cookie_name):
                     cookie['name'] = split[0].strip()
                     cookie['value'] = split[1]
                 else:
-                    cookie[split[0].strip().lower()] = split[1] if len(split) > 1 else True
+                    cookie[split[0].strip().lower()] = split[1] if len(
+                        split) > 1 else True
             return cookie
     return None
 
@@ -171,16 +173,18 @@ def extract_all_cookies(response):
         is_name = True
         name = None
         for attr in attributes:
-            split = attr.split('=', 1)
+            split = attr.split('=')
             if is_name:
                 name = split[0].strip()
                 cookie['value'] = split[1]
                 is_name = False
             else:
-                cookie[split[0].strip().lower()] = split[1] if len(split) > 1 else True
+                cookie[split[0].strip().lower()] = split[1] if len(
+                    split) > 1 else True
         cookies[name] = cookie
     return cookies
 
 
 def get_unix_timestamp(expiry):
-    return int(datetime.strptime(expiry, '%a, %d-%b-%Y %H:%M:%S GMT').replace(tzinfo=timezone.utc).timestamp())
+    return int(datetime.strptime(
+        expiry, '%a, %d-%b-%Y %H:%M:%S GMT').replace(tzinfo=timezone.utc).timestamp())

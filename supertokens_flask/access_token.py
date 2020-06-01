@@ -19,13 +19,16 @@ from supertokens_flask.utils import sanitize_number, sanitize_string, get_timest
 from supertokens_flask.exceptions import raise_general_exception
 
 
-def get_info_from_access_token(token, jwt_signing_public_key, do_anti_csrf_check):
+def get_info_from_access_token(
+        token, jwt_signing_public_key, do_anti_csrf_check):
     try:
         payload = get_payload(token, jwt_signing_public_key)
         session_handle = sanitize_string(payload.get('sessionHandle'))
         user_id = sanitize_string(payload.get('userId'))
-        refresh_token_hash_1 = sanitize_string(payload.get('refreshTokenHash1'))
-        parent_refresh_token_hash_1 = sanitize_string(payload.get('parentRefreshTokenHash1'))
+        refresh_token_hash_1 = sanitize_string(
+            payload.get('refreshTokenHash1'))
+        parent_refresh_token_hash_1 = sanitize_string(
+            payload.get('parentRefreshTokenHash1'))
         user_data = payload.get('userData')
         anti_csrf_token = sanitize_string(payload.get('antiCsrfToken'))
         expiry_time = sanitize_number(payload.get('expiryTime'))
@@ -40,7 +43,8 @@ def get_info_from_access_token(token, jwt_signing_public_key, do_anti_csrf_check
                 (time_created is None):
             print(session_handle, user_data, refresh_token_hash_1, user_data, anti_csrf_token, expiry_time,
                   time_created, do_anti_csrf_check, flush=True)
-            raise Exception('Access token does not contain all the information. Maybe the structure has changed?')
+            raise Exception(
+                'Access token does not contain all the information. Maybe the structure has changed?')
 
         if expiry_time < get_timestamp_ms():
             raise Exception('Access token expired')

@@ -54,13 +54,17 @@ class Querier:
 
     @staticmethod
     def reset():
-        if ('SUPERTOKENS_ENV' not in environ) or (environ['SUPERTOKENS_ENV'] != 'testing'):
-            raise_general_exception('calling testing function in non testing env')
+        if ('SUPERTOKENS_ENV' not in environ) or (
+                environ['SUPERTOKENS_ENV'] != 'testing'):
+            raise_general_exception(
+                'calling testing function in non testing env')
         Querier.__instance = None
 
     def get_hosts_alive_for_testing(self):
-        if ('SUPERTOKENS_ENV' not in environ) or (environ['SUPERTOKENS_ENV'] != 'testing'):
-            raise_general_exception('calling testing function in non testing env')
+        if ('SUPERTOKENS_ENV' not in environ) or (
+                environ['SUPERTOKENS_ENV'] != 'testing'):
+            raise_general_exception(
+                'calling testing function in non testing env')
         return self.__hosts_alive_for_testing
 
     def get_api_version(self):
@@ -70,9 +74,12 @@ class Querier:
         def f(url):
             return requests.get(url)
 
-        response = self.__send_request_helper(API_VERSION, 'GET', f, len(self.__hosts))
+        response = self.__send_request_helper(
+            API_VERSION, 'GET', f, len(self.__hosts))
         cdi_supported_by_server = response['versions']
-        api_version = find_max_version(cdi_supported_by_server, SUPPORTED_CDI_VERSIONS)
+        api_version = find_max_version(
+            cdi_supported_by_server,
+            SUPPORTED_CDI_VERSIONS)
 
         if api_version is None:
             raise_general_exception('The running SuperTokens core version is not compatible with this Flask SDK. '
@@ -117,7 +124,8 @@ class Querier:
                 }
             }
 
-        if ('SUPERTOKENS_ENV' in environ) and (environ['SUPERTOKENS_ENV'] == 'testing') and test:
+        if ('SUPERTOKENS_ENV' in environ) and (
+                environ['SUPERTOKENS_ENV'] == 'testing') and test:
             return data
 
         def f(url):
@@ -157,14 +165,18 @@ class Querier:
             current_host = self.__hosts[self.__last_tried_index]
             self.__last_tried_index += 1
             self.__last_tried_index %= len(self.__hosts)
-            url = 'http://' + current_host['hostname'] + ':' + str(current_host['port']) + path
+            url = 'http://' + current_host['hostname'] + \
+                ':' + str(current_host['port']) + path
             response = http_function(url)
 
             if is_5xx_error(response.status_code):
-                return self.__send_request_helper(path, method, http_function, no_of_tries - 1)
+                return self.__send_request_helper(
+                    path, method, http_function, no_of_tries - 1)
 
-            if ('SUPERTOKENS_ENV' in environ) and (environ['SUPERTOKENS_ENV'] == 'testing'):
-                self.__hosts_alive_for_testing.add(current_host['hostname'] + ':' + str(current_host['port']))
+            if ('SUPERTOKENS_ENV' in environ) and (
+                    environ['SUPERTOKENS_ENV'] == 'testing'):
+                self.__hosts_alive_for_testing.add(
+                    current_host['hostname'] + ':' + str(current_host['port']))
 
             if is_4xx_error(response.status_code):
                 raise_general_exception('SuperTokens core threw an error for a ' + method + ' request to path: ' +
@@ -177,7 +189,8 @@ class Querier:
                 return response.text
 
         except requests.exceptions.ConnectionError:
-            return self.__send_request_helper(path, method, http_function, no_of_tries - 1)
+            return self.__send_request_helper(
+                path, method, http_function, no_of_tries - 1)
 
         except Exception as e:
             raise_general_exception(e)

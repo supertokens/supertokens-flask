@@ -46,7 +46,8 @@ from supertokens_flask.default_callbacks import (
 
 
 def create_new_session(response, user_id, jwt_payload=None, session_data=None):
-    session = session_helper.create_new_session(user_id, jwt_payload, session_data)
+    session = session_helper.create_new_session(
+        user_id, jwt_payload, session_data)
     access_token = session['accessToken']
     refresh_token = session['refreshToken']
     id_refresh_token = session['idRefreshToken']
@@ -229,13 +230,15 @@ class Supertokens:
             return response
 
         @app.errorhandler(SuperTokensTryRefreshTokenError)
-        def handle_unauthorised(e):
+        def handle_try_refresh_token(e):
             response = make_response(self.__try_refresh_token_callback(e))
             return response
 
         @app.errorhandler(SuperTokensTokenTheftError)
-        def handle_unauthorised(e):
-            response = make_response(self.__token_theft_detected_callback(e.session_handle, e.user_id))
+        def handle_token_theft(e):
+            response = make_response(
+                self.__token_theft_detected_callback(
+                    e.session_handle, e.user_id))
             clear_cookies(response)
             return response
 

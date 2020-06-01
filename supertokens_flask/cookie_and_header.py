@@ -29,6 +29,7 @@ from supertokens_flask.constants import (
 )
 from supertokens_flask.device_info import DeviceInfo
 from supertokens_flask.handshake_info import HandshakeInfo
+from urllib.parse import quote, unquote
 
 
 def save_frontend_info_from_request(request):
@@ -45,9 +46,14 @@ def save_frontend_info_from_request(request):
 
 
 def set_options_api_headers(response):
-    set_header(response, 'Access-Control-Allow-Headers', ANTI_CSRF_HEADER_SET_KEY)
-    set_header(response, "Access-Control-Allow-Headers", SUPERTOKENS_SDK_NAME_HEADER_SET_KEY)
-    set_header(response, "Access-Control-Allow-Headers", SUPERTOKENS_SDK_VERSION_HEADER_SET_KEY)
+    set_header(
+        response,
+        'Access-Control-Allow-Headers',
+        ANTI_CSRF_HEADER_SET_KEY)
+    set_header(response, "Access-Control-Allow-Headers",
+               SUPERTOKENS_SDK_NAME_HEADER_SET_KEY)
+    set_header(response, "Access-Control-Allow-Headers",
+               SUPERTOKENS_SDK_VERSION_HEADER_SET_KEY)
     set_header(response, 'Access-Control-Allow-Credentials', 'true')
 
 
@@ -63,17 +69,24 @@ def get_header(request, key):
 
 
 def get_cookie(request, key):
-    return request.cookies.get(key)
+    cookie_val = request.cookies.get(key)
+    if cookie_val is None:
+        return None
+    return unquote(cookie_val)
 
 
-def set_cookie(response, key, value, expires, path, domain, secure, http_only, same_site):
-    response.set_cookie(key=key, value=value, expires=expires // 1000, path=path,
+def set_cookie(response, key, value, expires, path,
+               domain, secure, http_only, same_site):
+    response.set_cookie(key=key, value=quote(value, encoding='utf-8'), expires=expires // 1000, path=path,
                         domain=domain, secure=secure, httponly=http_only, samesite=same_site)
 
 
 def attach_anti_csrf_header(response, value):
     set_header(response, ANTI_CSRF_HEADER_SET_KEY, value)
-    set_header(response, 'Access-Control-Expose-Headers', ANTI_CSRF_HEADER_SET_KEY)
+    set_header(
+        response,
+        'Access-Control-Expose-Headers',
+        ANTI_CSRF_HEADER_SET_KEY)
 
 
 def get_anti_csrf_header(request):
@@ -89,22 +102,36 @@ def clear_session_from_cookie(response, domain, secure, access_token_path, refre
     set_cookie(response, REFRESH_TOKEN_COOKIE_KEY, '', 0, refresh_token_path,
                domain, secure, True, same_site)
     set_header(response, ID_REFRESH_TOKEN_HEADER_SET_KEY, "remove")
-    set_header(response, "Access-Control-Expose-Headers", ID_REFRESH_TOKEN_HEADER_SET_KEY)
+    set_header(
+        response,
+        "Access-Control-Expose-Headers",
+        ID_REFRESH_TOKEN_HEADER_SET_KEY)
 
 
-def attach_access_token_to_cookie(response, token, expires_at, domain, path, secure, same_site):
+def attach_access_token_to_cookie(
+        response, token, expires_at, domain, path, secure, same_site):
     set_cookie(response, ACCESS_TOKEN_COOKIE_KEY, token, expires_at, path,
                domain, secure, True, same_site)
 
 
-def attach_refresh_token_to_cookie(response, token, expires_at, domain, path, secure, same_site):
+def attach_refresh_token_to_cookie(
+        response, token, expires_at, domain, path, secure, same_site):
     set_cookie(response, REFRESH_TOKEN_COOKIE_KEY, token, expires_at, path,
                domain, secure, True, same_site)
 
 
-def attach_id_refresh_token_to_cookie_and_header(response, token, expires_at, domain, path, secure, same_site):
-    set_header(response, ID_REFRESH_TOKEN_HEADER_SET_KEY, token + ';' + str(expires_at))
-    set_header(response, ACCESS_CONTROL_EXPOSE_HEADERS, ID_REFRESH_TOKEN_HEADER_SET_KEY)
+def attach_id_refresh_token_to_cookie_and_header(
+        response, token, expires_at, domain, path, secure, same_site):
+    set_header(
+        response,
+        ID_REFRESH_TOKEN_HEADER_SET_KEY,
+        token +
+        ';' +
+        str(expires_at))
+    set_header(
+        response,
+        ACCESS_CONTROL_EXPOSE_HEADERS,
+        ID_REFRESH_TOKEN_HEADER_SET_KEY)
     set_cookie(response, ID_REFRESH_TOKEN_COOKIE_KEY, token, expires_at, path,
                domain, secure, True, same_site)
 

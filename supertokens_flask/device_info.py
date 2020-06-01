@@ -32,8 +32,10 @@ class DeviceInfo:
 
     @staticmethod
     def reset():
-        if ('SUPERTOKENS_ENV' not in environ) or (environ['SUPERTOKENS_ENV'] != 'testing'):
-            raise_general_exception('calling testing function in non testing env')
+        if ('SUPERTOKENS_ENV' not in environ) or (
+                environ['SUPERTOKENS_ENV'] != 'testing'):
+            raise_general_exception(
+                'calling testing function in non testing env')
         DeviceInfo.__instance = None
 
     def get_frontend_sdk(self):

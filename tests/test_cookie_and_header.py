@@ -47,7 +47,16 @@ def app():
         path = '/'
         expires = int(request.args['expiry'])
         same_site = 'none'
-        set_cookie(response, key, value, expires, path, domain, secure, http_only, same_site)
+        set_cookie(
+            response,
+            key,
+            value,
+            expires,
+            path,
+            domain,
+            secure,
+            http_only,
+            same_site)
         return response
 
     return app

@@ -31,7 +31,7 @@ then
    echo "$(tput setaf 2)* Yes$(tput sgr 0)"
 else
    echo "$(tput setaf 1)* No$(tput sgr 0)"
-    echo "$(tput setaf 1)Please run 'make lint' to format the code.$(tput sgr 0)"
+    echo "$(tput setaf 1)Please run 'make lint' to format the code. Also run 'make check-lint' to fix the lint error that were not fixed$(tput sgr 0)"
     echo ""
 fi
 
@@ -58,11 +58,11 @@ else
 fi
 
 # get current version----------
-version=`cat composer.json | grep -e '"version":'`
+version=`cat setup.py | grep -e 'version='`
 while IFS='"' read -ra ADDR; do
     counter=0
     for i in "${ADDR[@]}"; do
-        if [[ ${counter} == 3 ]]
+        if [[ ${counter} == 1 ]]
         then
             version=${i}
         fi
@@ -70,7 +70,7 @@ while IFS='"' read -ra ADDR; do
     done
 done <<< "$version"
 
-codeversion=`cat ./src/Helpers/Constants.php | grep -e 'const VERSION'`
+codeversion=`cat ./supertokens_flask/constants.py | grep -e '^VERSION'`
 while IFS="'" read -ra ADDR; do
     counter=0
     for i in "${ADDR[@]}"; do
@@ -88,7 +88,7 @@ if [[ ${version} != ${codeversion} ]]
 then
     RED='\033[0;31m'
     NC='\033[0m' # No Color
-    printf "${RED}Version codes in /src/Helpers/Constants.php and composer.json are not the same${NC}\n"
+    printf "${RED}Version codes in ./supertokens_flask/constants.py and setup.py are not the same${NC}\n"
     exit 1
 fi
 

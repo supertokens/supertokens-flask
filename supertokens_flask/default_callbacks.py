@@ -21,11 +21,13 @@ from supertokens_flask.session_helper import revoke_session
 
 
 def default_unauthorised_callback(e):
-    return jsonify({ERROR_MESSAGE_KEY: 'unauthorised'}), HandshakeInfo.get_instance().session_expired_status_code
+    return jsonify({ERROR_MESSAGE_KEY: 'unauthorised'}
+                   ), HandshakeInfo.get_instance().session_expired_status_code
 
 
 def default_try_refresh_token_callback(e):
-    return jsonify({ERROR_MESSAGE_KEY: 'try refresh token'}), HandshakeInfo.get_instance().session_expired_status_code
+    return jsonify({ERROR_MESSAGE_KEY: 'try refresh token'}
+                   ), HandshakeInfo.get_instance().session_expired_status_code
 
 
 def default_token_theft_detected_callback(session_handle, user_id):

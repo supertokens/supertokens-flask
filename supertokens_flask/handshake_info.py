@@ -45,8 +45,10 @@ class HandshakeInfo:
 
     @staticmethod
     def reset():
-        if ('SUPERTOKENS_ENV' not in environ) or (environ['SUPERTOKENS_ENV'] != 'testing'):
-            raise_general_exception('calling testing function in non testing env')
+        if ('SUPERTOKENS_ENV' not in environ) or (
+                environ['SUPERTOKENS_ENV'] != 'testing'):
+            raise_general_exception(
+                'calling testing function in non testing env')
         HandshakeInfo.__instance = None
 
     def update_jwt_signing_public_key_info(self, new_key, new_expiry):

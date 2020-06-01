@@ -20,7 +20,7 @@ extras_require = {
 
 setup(
     name="supertokens_flask",
-    version="0.0.1.dev4",
+    version="0.0.1",
     author="Supertokens",
     license="MIT",
     author_email="team@supertokens.io",

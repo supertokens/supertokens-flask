@@ -17,12 +17,12 @@ from supertokens_flask import session_helper
 from supertokens_flask.constants import SESSION_REGENERATE
 from supertokens_flask.cookie_and_header import clear_cookies, attach_access_token_to_cookie
 from supertokens_flask.exceptions import SuperTokensUnauthorisedError, raise_unauthorised_exception
-from supertokens_flask.handshake_info import HandshakeInfo
 from supertokens_flask.querier import Querier
 
 
 class Session:
-    def __init__(self, access_token, session_handle, user_id, jwt_payload, response):
+    def __init__(self, access_token, session_handle,
+                 user_id, jwt_payload, response):
         self.__access_token = access_token
         self.__session_handle = session_handle
         self.__user_id = user_id
@@ -53,7 +53,8 @@ class Session:
 
     def update_session_data(self, new_session_data):
         try:
-            return session_helper.update_session_data(self.__session_handle, new_session_data)
+            return session_helper.update_session_data(
+                self.__session_handle, new_session_data)
         except SuperTokensUnauthorisedError as e:
             self.__clear_cookies()
             raise e

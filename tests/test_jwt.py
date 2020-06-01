@@ -27,7 +27,8 @@ from Crypto.Signature.pkcs1_15 import PKCS115_SigScheme
 
 def test_jwt_get_payload():
     key_pair = RSA.generate(bits=2048)
-    pub_key = key_pair.publickey().export_key().decode('utf-8').split('-----BEGIN PUBLIC KEY-----\n')[1]
+    pub_key = key_pair.publickey().export_key().decode(
+        'utf-8').split('-----BEGIN PUBLIC KEY-----\n')[1]
     pub_key = pub_key.split('-----END PUBLIC KEY-----')[0]
     pub_key = ''.join(pub_key.split('\n'))
 

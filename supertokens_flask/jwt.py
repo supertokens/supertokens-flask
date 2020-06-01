@@ -15,11 +15,9 @@ under the License.
 """
 
 from supertokens_flask.utils import (
-    utf_base64decode,
-    utf_base64encode
+    utf_base64decode
 )
 from json import (
-    dumps,
     loads
 )
 from Crypto.PublicKey import RSA
@@ -38,11 +36,11 @@ why separators is used in dumps:
 
 we require the non-spaced version, else the base64 encoding string will end up different than required
 """
-_allowed_headers = [utf_base64encode(dumps({
+_allowed_headers = [{
     'alg': 'RS256',
     'typ': 'JWT',
     'version': '2'
-}, separators=(',', ':')))]
+}]
 
 
 def get_payload(jwt, signing_public_key):
@@ -51,15 +49,22 @@ def get_payload(jwt, signing_public_key):
         raise Exception("invalid jwt")
 
     header, payload, signature = splitted_input
-    if header not in _allowed_headers:
+    if loads(utf_base64decode(header)) not in _allowed_headers:
+        exit(0)
         raise Exception("jwt header mismatch")
 
-    public_key = RSA.import_key(_key_start + "\n".join(wrap(signing_public_key, width=64)) + _key_end)
+    public_key = RSA.import_key(
+        _key_start +
+        "\n".join(
+            wrap(
+                signing_public_key,
+                width=64)) +
+        _key_end)
     verifier = PKCS115_SigScheme(public_key)
     to_verify = SHA256.new((header + "." + payload).encode('utf-8'))
     try:
         verifier.verify(to_verify, b64decode(signature.encode('utf-8')))
-    except:
+    except BaseException:
         raise Exception("jwt verification failed")
 
     return loads(utf_base64decode(payload))

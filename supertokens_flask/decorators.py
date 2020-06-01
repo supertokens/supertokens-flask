@@ -24,7 +24,6 @@ from supertokens_flask.cookie_and_header import (
     attach_id_refresh_token_to_cookie_and_header,
     attach_refresh_token_to_cookie
 )
-from supertokens_flask.exceptions import SuperTokensError
 
 
 def __manage_cookies_post_response(session, response):

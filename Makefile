@@ -7,10 +7,10 @@ help:
 	@echo "        \x1b[33;1mhelp: \x1b[0mprints this"
 
 lint:
-	autopep8 -r -i -a supertokens_laravel tests
+	autopep8 -r -i -a supertokens_flask tests
 
 check-lint:
-	flake8 supertokens_laravel tests
+	flake8 supertokens_flask tests
 
 set-up-hooks:
 	cp hooks/pre-commit.sh .git/hooks/pre-commit
@@ -20,4 +20,4 @@ test:
 	pytest
 
 dev-install:
-	pip install flask pycryptodome pytest jsonschema autopep8 flake8 requests pyyaml
+	pip3 install flask pycryptodome pytest jsonschema autopep8 flake8 requests pyyaml

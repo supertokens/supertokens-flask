@@ -58,7 +58,8 @@ def test_successful_handshake_and_update_jwt():
     assert isinstance(info.cookie_secure, bool) and not info.cookie_secure
     assert info.refresh_token_path == '/refresh'
     assert isinstance(info.enable_anti_csrf, bool) and info.enable_anti_csrf
-    assert isinstance(info.access_token_blacklisting_enabled, bool) and not info.access_token_blacklisting_enabled
+    assert isinstance(info.access_token_blacklisting_enabled,
+                      bool) and not info.access_token_blacklisting_enabled
     assert isinstance(info.jwt_signing_public_key_expiry_time, int)
     info.update_jwt_signing_public_key_info('test', 100)
     updated_info = HandshakeInfo.get_instance()
@@ -67,9 +68,15 @@ def test_successful_handshake_and_update_jwt():
 
 
 def test_custom_config():
-    set_key_value_in_config(TEST_SESSION_EXPIRED_STATUS_CODE_CONFIG_KEY, TEST_SESSION_EXPIRED_STATUS_CODE_VALUE)
-    set_key_value_in_config(TEST_COOKIE_SECURE_CONFIG_KEY, TEST_COOKIE_SECURE_VALUE)
+    set_key_value_in_config(
+        TEST_SESSION_EXPIRED_STATUS_CODE_CONFIG_KEY,
+        TEST_SESSION_EXPIRED_STATUS_CODE_VALUE)
+    set_key_value_in_config(
+        TEST_COOKIE_SECURE_CONFIG_KEY,
+        TEST_COOKIE_SECURE_VALUE)
     start_st()
-    assert HandshakeInfo.get_instance().session_expired_status_code == TEST_SESSION_EXPIRED_STATUS_CODE_VALUE
-    assert isinstance(HandshakeInfo.get_instance().cookie_secure, bool) and HandshakeInfo.get_instance().cookie_secure
-
+    assert HandshakeInfo.get_instance(
+    ).session_expired_status_code == TEST_SESSION_EXPIRED_STATUS_CODE_VALUE
+    assert isinstance(
+        HandshakeInfo.get_instance().cookie_secure,
+        bool) and HandshakeInfo.get_instance().cookie_secure

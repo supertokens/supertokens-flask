@@ -1,21 +1,35 @@
 version: 2
 jobs:
+  publish:
+    docker:
+      - image: rishabhpoddar/supertokens_python_driver_testing
+    steps:
+      - checkout
+      - run: make dev-install
+      - run: pip install setuptools wheel twine
+      - run: python setup.py sdist bdist_wheel
+      - run: twine upload --username $USERNAME --password $PASSWORD dist/*
   test:
     docker:
-      - image: rishabhpoddar/supertokens_laravel_driver_testing
+      - image: rishabhpoddar/supertokens_python_driver_testing
     steps:
       - add_ssh_keys:
           fingerprints:
             - "46:31:70:29:8c:9b:ab:66:b6:7b:fe:42:9f:45:28:90"
       - checkout
       - run: apt-get update
-      - run: apt install php7.3-mbstring -y
-      - run: composer install
+      - run: make dev-install
       - run: (cd .circleci/ && ./doTests.sh)
 workflows:
   version: 2
   tagged-build:
     jobs:
+      - publish:
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/
       - test:
           filters:
             tags:

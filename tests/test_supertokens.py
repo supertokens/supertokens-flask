@@ -21,10 +21,7 @@ from .utils import (
     TEST_ACCESS_TOKEN_PATH_VALUE,
     TEST_ACCESS_TOKEN_PATH_CONFIG_KEY,
     TEST_REFRESH_TOKEN_PATH_KEY_VALUE,
-    TEST_REFRESH_TOKEN_PATH_KEY_VALUE_TEST_DECORATOR,
     TEST_REFRESH_TOKEN_PATH_CONFIG_KEY,
-    TEST_SESSION_EXPIRED_STATUS_CODE_VALUE,
-    TEST_SESSION_EXPIRED_STATUS_CODE_CONFIG_KEY,
     TEST_COOKIE_DOMAIN_VALUE,
     TEST_COOKIE_DOMAIN_CONFIG_KEY,
     TEST_ACCESS_TOKEN_MAX_AGE_VALUE,
@@ -56,7 +53,7 @@ from supertokens_flask.supertokens import (
 from supertokens_flask.session_helper import ProcessState
 from time import time
 from pytest import fixture
-from flask import request, Flask, jsonify, g, make_response, Response
+from flask import request, Flask, jsonify, make_response, Response
 
 
 def setup_function(f):
@@ -108,7 +105,7 @@ def app():
         return response
 
     @app.route('/handle', methods=['GET', 'OPTIONS'])
-    def handle():
+    def handle_api():
         if request.method == 'OPTIONS':
             return jsonify({'method': 'option'})
         session = get_session(None, False)
@@ -125,13 +122,27 @@ def app():
 
 
 def test_cookie_and_header_values_with_csrf_enabled(app):
-    set_key_value_in_config(TEST_COOKIE_SAME_SITE_CONFIG_KEY, TEST_COOKIE_SAME_SITE_VALUE)
-    set_key_value_in_config(TEST_ACCESS_TOKEN_MAX_AGE_CONFIG_KEY, TEST_ACCESS_TOKEN_MAX_AGE_VALUE)
-    set_key_value_in_config(TEST_ACCESS_TOKEN_PATH_CONFIG_KEY, TEST_ACCESS_TOKEN_PATH_VALUE)
-    set_key_value_in_config(TEST_COOKIE_DOMAIN_CONFIG_KEY, TEST_COOKIE_DOMAIN_VALUE)
-    set_key_value_in_config(TEST_REFRESH_TOKEN_MAX_AGE_CONFIG_KEY, TEST_REFRESH_TOKEN_MAX_AGE_VALUE)
-    set_key_value_in_config(TEST_REFRESH_TOKEN_PATH_CONFIG_KEY, TEST_REFRESH_TOKEN_PATH_KEY_VALUE)
-    set_key_value_in_config(TEST_COOKIE_SECURE_CONFIG_KEY, TEST_COOKIE_SECURE_VALUE)
+    set_key_value_in_config(
+        TEST_COOKIE_SAME_SITE_CONFIG_KEY,
+        TEST_COOKIE_SAME_SITE_VALUE)
+    set_key_value_in_config(
+        TEST_ACCESS_TOKEN_MAX_AGE_CONFIG_KEY,
+        TEST_ACCESS_TOKEN_MAX_AGE_VALUE)
+    set_key_value_in_config(
+        TEST_ACCESS_TOKEN_PATH_CONFIG_KEY,
+        TEST_ACCESS_TOKEN_PATH_VALUE)
+    set_key_value_in_config(
+        TEST_COOKIE_DOMAIN_CONFIG_KEY,
+        TEST_COOKIE_DOMAIN_VALUE)
+    set_key_value_in_config(
+        TEST_REFRESH_TOKEN_MAX_AGE_CONFIG_KEY,
+        TEST_REFRESH_TOKEN_MAX_AGE_VALUE)
+    set_key_value_in_config(
+        TEST_REFRESH_TOKEN_PATH_CONFIG_KEY,
+        TEST_REFRESH_TOKEN_PATH_KEY_VALUE)
+    set_key_value_in_config(
+        TEST_COOKIE_SECURE_CONFIG_KEY,
+        TEST_COOKIE_SECURE_VALUE)
     start_st()
 
     response_1 = app.test_client().get('/login')
@@ -153,16 +164,21 @@ def test_cookie_and_header_values_with_csrf_enabled(app):
     assert cookies_1['sAccessToken']['secure']
     assert cookies_1['sRefreshToken']['secure']
     assert cookies_1['sIdRefreshToken']['secure']
-    assert get_unix_timestamp(cookies_1['sAccessToken']['expires']) - int(time()) == TEST_ACCESS_TOKEN_MAX_AGE_VALUE
+    assert get_unix_timestamp(
+        cookies_1['sAccessToken']['expires']) - int(time()) == TEST_ACCESS_TOKEN_MAX_AGE_VALUE
     assert get_unix_timestamp(cookies_1['sRefreshToken']['expires']) - int(time()) == \
         TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60
-    assert cookies_1['sIdRefreshToken']['value'] + ';' == response_1.headers['Id-Refresh-Token'][:-13]
+    assert cookies_1['sIdRefreshToken']['value'] + \
+        ';' == response_1.headers['Id-Refresh-Token'][:-13]
     assert int(response_1.headers['Id-Refresh-Token'][-13:-3]) == \
         get_unix_timestamp(cookies_1['sIdRefreshToken']['expires'])
     assert response_1.headers[ACCESS_CONTROL_EXPOSE_HEADER] == ACCESS_CONTROL_EXPOSE_HEADER_ANTI_CSRF_ENABLE
 
     request_2 = app.test_client()
-    request_2.set_cookie('localhost', 'sRefreshToken', cookies_1['sRefreshToken']['value'])
+    request_2.set_cookie(
+        'localhost',
+        'sRefreshToken',
+        cookies_1['sRefreshToken']['value'])
     response_2 = request_2.post('/refresh')
     cookies_2 = extract_all_cookies(response_2)
     assert cookies_1['sAccessToken']['value'] != cookies_2['sAccessToken']['value']
@@ -184,18 +200,29 @@ def test_cookie_and_header_values_with_csrf_enabled(app):
     assert cookies_2['sAccessToken']['secure']
     assert cookies_2['sRefreshToken']['secure']
     assert cookies_2['sIdRefreshToken']['secure']
-    assert get_unix_timestamp(cookies_2['sAccessToken']['expires']) - int(time()) == TEST_ACCESS_TOKEN_MAX_AGE_VALUE
+    assert get_unix_timestamp(
+        cookies_2['sAccessToken']['expires']) - int(time()) == TEST_ACCESS_TOKEN_MAX_AGE_VALUE
     assert get_unix_timestamp(cookies_2['sRefreshToken']['expires']) - int(time()) == \
         TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60
-    assert cookies_2['sIdRefreshToken']['value'] + ';' == response_2.headers['Id-Refresh-Token'][:-13]
+    assert cookies_2['sIdRefreshToken']['value'] + \
+        ';' == response_2.headers['Id-Refresh-Token'][:-13]
     assert int(response_2.headers['Id-Refresh-Token'][-13:-3]) == \
         get_unix_timestamp(cookies_2['sIdRefreshToken']['expires'])
     assert response_2.headers[ACCESS_CONTROL_EXPOSE_HEADER] == ACCESS_CONTROL_EXPOSE_HEADER_ANTI_CSRF_ENABLE
 
     request_3 = app.test_client()
-    request_3.set_cookie('localhost', 'sAccessToken', cookies_2['sAccessToken']['value'])
-    request_3.set_cookie('localhost', 'sIdRefreshToken', cookies_2['sIdRefreshToken']['value'])
-    response_3 = request_3.get('/info', headers={'anti-csrf': response_2.headers.get('anti-csrf')})
+    request_3.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_2['sAccessToken']['value'])
+    request_3.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_2['sIdRefreshToken']['value'])
+    response_3 = request_3.get(
+        '/info',
+        headers={
+            'anti-csrf': response_2.headers.get('anti-csrf')})
     assert response_3.status_code == 200
     cookies_3 = extract_all_cookies(response_3)
     assert cookies_3['sAccessToken']['value'] != cookies_2['sAccessToken']['value']
@@ -209,9 +236,18 @@ def test_cookie_and_header_values_with_csrf_enabled(app):
     assert cookies_3['sAccessToken']['secure']
 
     request_4 = app.test_client()
-    request_4.set_cookie('localhost', 'sAccessToken', cookies_3['sAccessToken']['value'])
-    request_4.set_cookie('localhost', 'sIdRefreshToken', cookies_2['sIdRefreshToken']['value'])
-    response_4 = request_4.post('/logout', headers={'anti-csrf': response_2.headers.get('anti-csrf')})
+    request_4.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_3['sAccessToken']['value'])
+    request_4.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_2['sIdRefreshToken']['value'])
+    response_4 = request_4.post(
+        '/logout',
+        headers={
+            'anti-csrf': response_2.headers.get('anti-csrf')})
     cookies_4 = extract_all_cookies(response_4)
     assert response_4.headers.get('anti-csrf') is None
     assert cookies_4['sAccessToken']['value'] == ''
@@ -240,13 +276,27 @@ def test_cookie_and_header_values_with_csrf_enabled(app):
 
 def test_cookie_and_header_values_with_csrf_disabled(app):
     set_key_value_in_config(TEST_ENABLE_ANTI_CSRF_CONFIG_KEY, False)
-    set_key_value_in_config(TEST_COOKIE_SAME_SITE_CONFIG_KEY, TEST_COOKIE_SAME_SITE_VALUE)
-    set_key_value_in_config(TEST_ACCESS_TOKEN_MAX_AGE_CONFIG_KEY, TEST_ACCESS_TOKEN_MAX_AGE_VALUE)
-    set_key_value_in_config(TEST_ACCESS_TOKEN_PATH_CONFIG_KEY, TEST_ACCESS_TOKEN_PATH_VALUE)
-    set_key_value_in_config(TEST_COOKIE_DOMAIN_CONFIG_KEY, TEST_COOKIE_DOMAIN_VALUE)
-    set_key_value_in_config(TEST_REFRESH_TOKEN_MAX_AGE_CONFIG_KEY, TEST_REFRESH_TOKEN_MAX_AGE_VALUE)
-    set_key_value_in_config(TEST_REFRESH_TOKEN_PATH_CONFIG_KEY, TEST_REFRESH_TOKEN_PATH_KEY_VALUE)
-    set_key_value_in_config(TEST_COOKIE_SECURE_CONFIG_KEY, TEST_COOKIE_SECURE_VALUE)
+    set_key_value_in_config(
+        TEST_COOKIE_SAME_SITE_CONFIG_KEY,
+        TEST_COOKIE_SAME_SITE_VALUE)
+    set_key_value_in_config(
+        TEST_ACCESS_TOKEN_MAX_AGE_CONFIG_KEY,
+        TEST_ACCESS_TOKEN_MAX_AGE_VALUE)
+    set_key_value_in_config(
+        TEST_ACCESS_TOKEN_PATH_CONFIG_KEY,
+        TEST_ACCESS_TOKEN_PATH_VALUE)
+    set_key_value_in_config(
+        TEST_COOKIE_DOMAIN_CONFIG_KEY,
+        TEST_COOKIE_DOMAIN_VALUE)
+    set_key_value_in_config(
+        TEST_REFRESH_TOKEN_MAX_AGE_CONFIG_KEY,
+        TEST_REFRESH_TOKEN_MAX_AGE_VALUE)
+    set_key_value_in_config(
+        TEST_REFRESH_TOKEN_PATH_CONFIG_KEY,
+        TEST_REFRESH_TOKEN_PATH_KEY_VALUE)
+    set_key_value_in_config(
+        TEST_COOKIE_SECURE_CONFIG_KEY,
+        TEST_COOKIE_SECURE_VALUE)
     start_st()
 
     response_1 = app.test_client().get('/login')
@@ -268,16 +318,21 @@ def test_cookie_and_header_values_with_csrf_disabled(app):
     assert cookies_1['sAccessToken']['secure']
     assert cookies_1['sRefreshToken']['secure']
     assert cookies_1['sIdRefreshToken']['secure']
-    assert get_unix_timestamp(cookies_1['sAccessToken']['expires']) - int(time()) == TEST_ACCESS_TOKEN_MAX_AGE_VALUE
+    assert get_unix_timestamp(
+        cookies_1['sAccessToken']['expires']) - int(time()) == TEST_ACCESS_TOKEN_MAX_AGE_VALUE
     assert get_unix_timestamp(cookies_1['sRefreshToken']['expires']) - int(time()) == \
         TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60
-    assert cookies_1['sIdRefreshToken']['value'] + ';' == response_1.headers['Id-Refresh-Token'][:-13]
+    assert cookies_1['sIdRefreshToken']['value'] + \
+        ';' == response_1.headers['Id-Refresh-Token'][:-13]
     assert int(response_1.headers['Id-Refresh-Token'][-13:-3]) == \
         get_unix_timestamp(cookies_1['sIdRefreshToken']['expires'])
     assert response_1.headers[ACCESS_CONTROL_EXPOSE_HEADER] == ACCESS_CONTROL_EXPOSE_HEADER_ANTI_CSRF_DISABLE
 
     request_2 = app.test_client()
-    request_2.set_cookie('localhost', 'sRefreshToken', cookies_1['sRefreshToken']['value'])
+    request_2.set_cookie(
+        'localhost',
+        'sRefreshToken',
+        cookies_1['sRefreshToken']['value'])
     response_2 = request_2.post('/refresh')
     cookies_2 = extract_all_cookies(response_2)
     assert cookies_1['sAccessToken']['value'] != cookies_2['sAccessToken']['value']
@@ -299,17 +354,25 @@ def test_cookie_and_header_values_with_csrf_disabled(app):
     assert cookies_2['sAccessToken']['secure']
     assert cookies_2['sRefreshToken']['secure']
     assert cookies_2['sIdRefreshToken']['secure']
-    assert get_unix_timestamp(cookies_2['sAccessToken']['expires']) - int(time()) == TEST_ACCESS_TOKEN_MAX_AGE_VALUE
+    assert get_unix_timestamp(
+        cookies_2['sAccessToken']['expires']) - int(time()) == TEST_ACCESS_TOKEN_MAX_AGE_VALUE
     assert get_unix_timestamp(cookies_2['sRefreshToken']['expires']) - int(time()) == \
         TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60
-    assert cookies_2['sIdRefreshToken']['value'] + ';' == response_2.headers['Id-Refresh-Token'][:-13]
+    assert cookies_2['sIdRefreshToken']['value'] + \
+        ';' == response_2.headers['Id-Refresh-Token'][:-13]
     assert int(response_2.headers['Id-Refresh-Token'][-13:-3]) == \
         get_unix_timestamp(cookies_2['sIdRefreshToken']['expires'])
     assert response_2.headers[ACCESS_CONTROL_EXPOSE_HEADER] == ACCESS_CONTROL_EXPOSE_HEADER_ANTI_CSRF_DISABLE
 
     request_3 = app.test_client()
-    request_3.set_cookie('localhost', 'sAccessToken', cookies_2['sAccessToken']['value'])
-    request_3.set_cookie('localhost', 'sIdRefreshToken', cookies_2['sIdRefreshToken']['value'])
+    request_3.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_2['sAccessToken']['value'])
+    request_3.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_2['sIdRefreshToken']['value'])
     response_3 = request_3.get('/info')
     assert response_3.status_code == 200
     cookies_3 = extract_all_cookies(response_3)
@@ -324,9 +387,18 @@ def test_cookie_and_header_values_with_csrf_disabled(app):
     assert cookies_3['sAccessToken']['secure']
 
     request_4 = app.test_client()
-    request_4.set_cookie('localhost', 'sAccessToken', cookies_3['sAccessToken']['value'])
-    request_4.set_cookie('localhost', 'sIdRefreshToken', cookies_2['sIdRefreshToken']['value'])
-    response_4 = request_4.post('/logout', headers={'anti-csrf': response_2.headers.get('anti-csrf')})
+    request_4.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_3['sAccessToken']['value'])
+    request_4.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_2['sIdRefreshToken']['value'])
+    response_4 = request_4.post(
+        '/logout',
+        headers={
+            'anti-csrf': response_2.headers.get('anti-csrf')})
     cookies_4 = extract_all_cookies(response_4)
     assert response_4.headers.get('anti-csrf') is None
     assert cookies_4['sAccessToken']['value'] == ''
@@ -358,15 +430,30 @@ def test_supertokens_token_theft_detection(app):
     response_1 = app.test_client().get('/login')
     cookies_1 = extract_all_cookies(response_1)
     request_2 = app.test_client()
-    request_2.set_cookie('localhost', 'sRefreshToken', cookies_1['sRefreshToken']['value'])
+    request_2.set_cookie(
+        'localhost',
+        'sRefreshToken',
+        cookies_1['sRefreshToken']['value'])
     response_2 = request_2.post('/refresh')
     cookies_2 = extract_all_cookies(response_2)
     request_3 = app.test_client()
-    request_3.set_cookie('localhost', 'sAccessToken', cookies_2['sAccessToken']['value'])
-    request_3.set_cookie('localhost', 'sIdRefreshToken', cookies_2['sIdRefreshToken']['value'])
-    request_3.get('/info', headers={'anti-csrf': response_2.headers.get('anti-csrf')})
+    request_3.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_2['sAccessToken']['value'])
+    request_3.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_2['sIdRefreshToken']['value'])
+    request_3.get(
+        '/info',
+        headers={
+            'anti-csrf': response_2.headers.get('anti-csrf')})
     request_4 = app.test_client()
-    request_4.set_cookie('localhost', 'sRefreshToken', cookies_1['sRefreshToken']['value'])
+    request_4.set_cookie(
+        'localhost',
+        'sRefreshToken',
+        cookies_1['sRefreshToken']['value'])
     response_4 = request_4.post('/refresh')
     assert response_4.json == {'error': 'token theft detected'}
     assert response_4.status_code == 440
@@ -378,27 +465,57 @@ def test_supertokens_basic_usage_of_sessions(app):
     cookies_1 = extract_all_cookies(response_1)
 
     request_2 = app.test_client()
-    request_2.set_cookie('localhost', 'sAccessToken', cookies_1['sAccessToken']['value'])
-    request_2.set_cookie('localhost', 'sIdRefreshToken', cookies_1['sIdRefreshToken']['value'])
-    request_2.get('/info', headers={'anti-csrf': response_1.headers.get('anti-csrf')})
+    request_2.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_1['sAccessToken']['value'])
+    request_2.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_1['sIdRefreshToken']['value'])
+    request_2.get(
+        '/info',
+        headers={
+            'anti-csrf': response_1.headers.get('anti-csrf')})
     assert not ProcessState.get_service_called()
 
     request_3 = app.test_client()
-    request_3.set_cookie('localhost', 'sRefreshToken', cookies_1['sRefreshToken']['value'])
+    request_3.set_cookie(
+        'localhost',
+        'sRefreshToken',
+        cookies_1['sRefreshToken']['value'])
     response_3 = request_3.post('/refresh')
     cookies_3 = extract_all_cookies(response_3)
 
     request_4 = app.test_client()
-    request_4.set_cookie('localhost', 'sAccessToken', cookies_3['sAccessToken']['value'])
-    request_4.set_cookie('localhost', 'sIdRefreshToken', cookies_3['sIdRefreshToken']['value'])
-    response_4 = request_4.get('/info', headers={'anti-csrf': response_3.headers.get('anti-csrf')})
+    request_4.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_3['sAccessToken']['value'])
+    request_4.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_3['sIdRefreshToken']['value'])
+    response_4 = request_4.get(
+        '/info',
+        headers={
+            'anti-csrf': response_3.headers.get('anti-csrf')})
     cookies_4 = extract_all_cookies(response_4)
     assert ProcessState.get_service_called()
 
     request_5 = app.test_client()
-    request_5.set_cookie('localhost', 'sAccessToken', cookies_4['sAccessToken']['value'])
-    request_5.set_cookie('localhost', 'sIdRefreshToken', cookies_3['sIdRefreshToken']['value'])
-    response_5 = request_5.get('/handle', headers={'anti-csrf': response_3.headers.get('anti-csrf')})
+    request_5.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_4['sAccessToken']['value'])
+    request_5.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_3['sIdRefreshToken']['value'])
+    response_5 = request_5.get(
+        '/handle',
+        headers={
+            'anti-csrf': response_3.headers.get('anti-csrf')})
     assert not ProcessState.get_service_called()
 
     assert revoke_session(response_5.json['s'])
@@ -410,15 +527,33 @@ def test_supertokens_session_verify_with_anti_csrf(app):
     cookies_1 = extract_all_cookies(response_1)
 
     request_2 = app.test_client()
-    request_2.set_cookie('localhost', 'sAccessToken', cookies_1['sAccessToken']['value'])
-    request_2.set_cookie('localhost', 'sIdRefreshToken', cookies_1['sIdRefreshToken']['value'])
-    response_2 = request_2.get('/info', headers={'anti-csrf': response_1.headers.get('anti-csrf')})
+    request_2.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_1['sAccessToken']['value'])
+    request_2.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_1['sIdRefreshToken']['value'])
+    response_2 = request_2.get(
+        '/info',
+        headers={
+            'anti-csrf': response_1.headers.get('anti-csrf')})
     assert response_2.status_code == 200
 
     request_3 = app.test_client()
-    request_3.set_cookie('localhost', 'sAccessToken', cookies_1['sAccessToken']['value'])
-    request_3.set_cookie('localhost', 'sIdRefreshToken', cookies_1['sIdRefreshToken']['value'])
-    response_3 = request_3.get('/handle', headers={'anti-csrf': response_1.headers.get('anti-csrf')})
+    request_3.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_1['sAccessToken']['value'])
+    request_3.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_1['sIdRefreshToken']['value'])
+    response_3 = request_3.get(
+        '/handle',
+        headers={
+            'anti-csrf': response_1.headers.get('anti-csrf')})
     assert response_3.status_code == 200
 
 
@@ -428,15 +563,27 @@ def test_supertokens_session_verify_without_anti_csrf(app):
     cookies_1 = extract_all_cookies(response_1)
 
     request_2 = app.test_client()
-    request_2.set_cookie('localhost', 'sAccessToken', cookies_1['sAccessToken']['value'])
-    request_2.set_cookie('localhost', 'sIdRefreshToken', cookies_1['sIdRefreshToken']['value'])
+    request_2.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_1['sAccessToken']['value'])
+    request_2.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_1['sIdRefreshToken']['value'])
     response_2 = request_2.get('/info')
     assert response_2.status_code == 401
     assert response_2.json == {'error_msg': 'try refresh token'}
 
     request_3 = app.test_client()
-    request_3.set_cookie('localhost', 'sAccessToken', cookies_1['sAccessToken']['value'])
-    request_3.set_cookie('localhost', 'sIdRefreshToken', cookies_1['sIdRefreshToken']['value'])
+    request_3.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_1['sAccessToken']['value'])
+    request_3.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_1['sIdRefreshToken']['value'])
     response_3 = request_3.get('/handle')
     assert response_3.status_code == 200
 
@@ -505,14 +652,26 @@ def test_supertokens_anti_csrf_disabled_for_core(app):
     cookies_1 = extract_all_cookies(response_1)
 
     request_2 = app.test_client()
-    request_2.set_cookie('localhost', 'sAccessToken', cookies_1['sAccessToken']['value'])
-    request_2.set_cookie('localhost', 'sIdRefreshToken', cookies_1['sIdRefreshToken']['value'])
+    request_2.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_1['sAccessToken']['value'])
+    request_2.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_1['sIdRefreshToken']['value'])
     response_2 = request_2.get('/info')
     assert response_2.status_code == 200
 
     request_3 = app.test_client()
-    request_3.set_cookie('localhost', 'sAccessToken', cookies_1['sAccessToken']['value'])
-    request_3.set_cookie('localhost', 'sIdRefreshToken', cookies_1['sIdRefreshToken']['value'])
+    request_3.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_1['sAccessToken']['value'])
+    request_3.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_1['sIdRefreshToken']['value'])
     response_3 = request_3.get('/handle')
     assert response_3.status_code == 200
 
@@ -520,5 +679,6 @@ def test_supertokens_anti_csrf_disabled_for_core(app):
 def test_supertokens_set_options_headers_api(app):
     response = Response('')
     set_relevant_headers_for_options_api(response)
-    assert response.headers.get('Access-Control-Allow-Headers') == 'anti-csrf, supertokens-sdk-name, supertokens-sdk-version'
+    assert response.headers.get(
+        'Access-Control-Allow-Headers') == 'anti-csrf, supertokens-sdk-name, supertokens-sdk-version'
     assert response.headers.get('Access-Control-Allow-Credentials') == 'true'

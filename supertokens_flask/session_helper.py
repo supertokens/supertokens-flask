@@ -60,8 +60,10 @@ class ProcessState:
 
     @staticmethod
     def reset():
-        if ('SUPERTOKENS_ENV' not in environ) or (environ['SUPERTOKENS_ENV'] != 'testing'):
-            raise_general_exception('calling testing function in non testing env')
+        if ('SUPERTOKENS_ENV' not in environ) or (
+                environ['SUPERTOKENS_ENV'] != 'testing'):
+            raise_general_exception(
+                'calling testing function in non testing env')
         ProcessState.__instance = None
 
 
@@ -70,7 +72,8 @@ def init(hosts):
 
 
 def reset():
-    if ('SUPERTOKENS_ENV' not in environ) or (environ['SUPERTOKENS_ENV'] != 'testing'):
+    if ('SUPERTOKENS_ENV' not in environ) or (
+            environ['SUPERTOKENS_ENV'] != 'testing'):
         raise_general_exception('calling testing function in non testing env')
     ProcessState.reset()
 
@@ -95,7 +98,8 @@ def create_new_session(user_id, jwt_payload=None, session_data=None):
     return response
 
 
-def get_session(access_token, anti_csrf_token, do_anti_csrf_check, id_refresh_token):
+def get_session(access_token, anti_csrf_token,
+                do_anti_csrf_check, id_refresh_token):
     if id_refresh_token is None:
         raise_unauthorised_exception('id_refresh_token missing')
     handshake_info = HandshakeInfo.get_instance()
@@ -108,7 +112,8 @@ def get_session(access_token, anti_csrf_token, do_anti_csrf_check, id_refresh_to
             if handshake_info.enable_anti_csrf and do_anti_csrf_check and \
                     (anti_csrf_token is None or anti_csrf_token != access_token_info['antiCsrfToken']):
                 if anti_csrf_token is None:
-                    raise_try_refresh_token_exception('anti_csrf_token is undefined')
+                    raise_try_refresh_token_exception(
+                        'anti_csrf_token is undefined')
                 raise_try_refresh_token_exception('anti-csrf check failed')
 
             if not handshake_info.access_token_blacklisting_enabled and \
@@ -158,7 +163,9 @@ def refresh_session(refresh_token):
     elif response['status'] == 'UNAUTHORISED':
         raise_unauthorised_exception(response['message'])
     else:
-        raise_token_theft_exception(response['session']['userId'], response['session']['handle'])
+        raise_token_theft_exception(
+            response['session']['userId'],
+            response['session']['handle'])
 
 
 def revoke_all_sessions_for_user(user_id):

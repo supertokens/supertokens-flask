@@ -61,7 +61,8 @@ def test_get_api_version():
     assert find_max_version(cv, sv) == API_VERSION_TEST_SINGLE_SUPPORTED_RESULT
     cv = API_VERSION_TEST_MULTIPLE_SUPPORTED_CV
     sv = API_VERSION_TEST_MULTIPLE_SUPPORTED_SV
-    assert find_max_version(cv, sv) == API_VERSION_TEST_MULTIPLE_SUPPORTED_RESULT
+    assert find_max_version(
+        cv, sv) == API_VERSION_TEST_MULTIPLE_SUPPORTED_RESULT
     cv = API_VERSION_TEST_NON_SUPPORTED_CV
     sv = API_VERSION_TEST_NON_SUPPORTED_SV
     assert find_max_version(cv, sv) is None

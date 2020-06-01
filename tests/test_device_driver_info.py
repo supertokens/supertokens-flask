@@ -60,11 +60,17 @@ def app():
 
 def test_driver_info_check_without_frontend_sdk():
     start_st()
-    response = Querier.get_instance().send_post_request(SESSION, {'userId': 'abc'}, True)
+    response = Querier.get_instance().send_post_request(
+        SESSION, {'userId': 'abc'}, True)
     assert response['userId'] == 'abc'
     assert 'deviceDriverInfo' in response
-    assert response['deviceDriverInfo'] == {'driver': {'name': 'flask', 'version': VERSION}, 'frontendSDK': []}
-    response = Querier.get_instance().send_post_request(HELLO, {'userId': 'pqr'}, True)
+    assert response['deviceDriverInfo'] == {
+        'driver': {
+            'name': 'flask',
+            'version': VERSION},
+        'frontendSDK': []}
+    response = Querier.get_instance().send_post_request(
+        HELLO, {'userId': 'pqr'}, True)
     assert response['userId'] == 'pqr'
     assert 'deviceDriverInfo' not in response
 
@@ -74,13 +80,33 @@ def test_driver_info_check_with_frontend_sdk(app):
     response_1 = app.test_client().get('/login')
     cookies_1 = extract_all_cookies(response_1)
     request_2 = app.test_client()
-    request_2.set_cookie('localhost', 'sAccessToken', cookies_1['sAccessToken']['value'])
-    request_2.set_cookie('localhost', 'sIdRefreshToken', cookies_1['sIdRefreshToken']['value'])
-    request_2.get('/info', headers={'supertokens-sdk-name': 'ios', 'supertokens-sdk-version': '0.0.0'})
+    request_2.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_1['sAccessToken']['value'])
+    request_2.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_1['sIdRefreshToken']['value'])
+    request_2.get(
+        '/info',
+        headers={
+            'supertokens-sdk-name': 'ios',
+            'supertokens-sdk-version': '0.0.0'})
     request_3 = app.test_client()
-    request_3.set_cookie('localhost', 'sAccessToken', cookies_1['sAccessToken']['value'])
-    request_3.set_cookie('localhost', 'sIdRefreshToken', cookies_1['sIdRefreshToken']['value'])
-    request_3.get('/info', headers={'supertokens-sdk-name': 'android', 'supertokens-sdk-version': VERSION})
+    request_3.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_1['sAccessToken']['value'])
+    request_3.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_1['sIdRefreshToken']['value'])
+    request_3.get(
+        '/info',
+        headers={
+            'supertokens-sdk-name': 'android',
+            'supertokens-sdk-version': VERSION})
 
     assert DeviceInfo.get_instance().get_frontend_sdk() == [{'name': 'ios', 'version': '0.0.0'},
                                                             {'name': 'android', 'version': VERSION}]

@@ -15,7 +15,7 @@ under the License.
 """
 
 from base64 import b64encode, b64decode
-from time import time_ns
+from time import time
 
 
 def utf_base64encode(s):
@@ -83,4 +83,4 @@ def sanitize_number(n):
 
 
 def get_timestamp_ms():
-    return time_ns() // 1000000
+    return int(time() * 1000)

@@ -92,14 +92,26 @@ def test_decorators_with_app(app):
     cookies_1 = extract_all_cookies(response_1)
 
     request_2 = app.test_client()
-    request_2.set_cookie('localhost', 'sAccessToken', cookies_1['sAccessToken']['value'])
-    request_2.set_cookie('localhost', 'sIdRefreshToken', cookies_1['sIdRefreshToken']['value'])
-    response_2 = request_2.get('/info', headers={'anti-csrf': response_1.headers.get('anti-csrf')})
+    request_2.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_1['sAccessToken']['value'])
+    request_2.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_1['sIdRefreshToken']['value'])
+    response_2 = request_2.get(
+        '/info',
+        headers={
+            'anti-csrf': response_1.headers.get('anti-csrf')})
     assert response_2.json == {'userId': 'userId'}
     assert response_2.status_code == 200
 
     request_3 = app.test_client()
-    request_3.set_cookie('localhost', 'sRefreshToken', cookies_1['sRefreshToken']['value'])
+    request_3.set_cookie(
+        'localhost',
+        'sRefreshToken',
+        cookies_1['sRefreshToken']['value'])
     response_3 = request_3.post('/refresh')
     assert response_3.json == {'userId': 'userId'}
     assert response_3.status_code == 200
@@ -125,9 +137,18 @@ def test_decorators_with_app(app):
     assert cookies_3['sIdRefreshToken'].get('secure') is None
 
     request_4 = app.test_client()
-    request_4.set_cookie('localhost', 'sAccessToken', cookies_3['sAccessToken']['value'])
-    request_4.set_cookie('localhost', 'sIdRefreshToken', cookies_3['sIdRefreshToken']['value'])
-    response_4 = request_4.get('/info', headers={'anti-csrf': response_3.headers.get('anti-csrf')})
+    request_4.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_3['sAccessToken']['value'])
+    request_4.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_3['sIdRefreshToken']['value'])
+    response_4 = request_4.get(
+        '/info',
+        headers={
+            'anti-csrf': response_3.headers.get('anti-csrf')})
     assert response_4.json == {'userId': 'userId'}
     assert response_4.status_code == 200
     cookies_4 = extract_all_cookies(response_4)
@@ -146,9 +167,18 @@ def test_decorators_with_app(app):
     assert response_5.status_code == 200
 
     request_6 = app.test_client()
-    request_6.set_cookie('localhost', 'sAccessToken', cookies_4['sAccessToken']['value'])
-    request_6.set_cookie('localhost', 'sIdRefreshToken', cookies_3['sIdRefreshToken']['value'])
-    response_6 = request_6.get('/info', headers={'anti-csrf': response_3.headers.get('anti-csrf')})
+    request_6.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_4['sAccessToken']['value'])
+    request_6.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_3['sIdRefreshToken']['value'])
+    response_6 = request_6.get(
+        '/info',
+        headers={
+            'anti-csrf': response_3.headers.get('anti-csrf')})
     assert response_6.json == {'userId': 'userId'}
     assert response_6.status_code == 200
 
@@ -157,7 +187,10 @@ def test_decorators_with_app(app):
     assert response_7.status_code == 401
 
     request_8 = app.test_client()
-    request_8.set_cookie('localhost', 'sRefreshToken', cookies_1['sRefreshToken']['value'])
+    request_8.set_cookie(
+        'localhost',
+        'sRefreshToken',
+        cookies_1['sRefreshToken']['value'])
     response_8 = request_8.post('/refresh')
     assert response_8.json == {'error': 'token theft detected'}
     assert response_8.status_code == 440
@@ -173,14 +206,26 @@ def test_decorators_with_app(app):
     cookies_9 = extract_all_cookies(response_9)
 
     request_10 = app.test_client()
-    request_10.set_cookie('localhost', 'sAccessToken', cookies_9['sAccessToken']['value'])
-    request_10.set_cookie('localhost', 'sIdRefreshToken', cookies_9['sIdRefreshToken']['value'])
-    response_10 = request_10.post('/logout', headers={'anti-csrf': response_9.headers.get('anti-csrf')})
+    request_10.set_cookie(
+        'localhost',
+        'sAccessToken',
+        cookies_9['sAccessToken']['value'])
+    request_10.set_cookie(
+        'localhost',
+        'sIdRefreshToken',
+        cookies_9['sIdRefreshToken']['value'])
+    response_10 = request_10.post(
+        '/logout',
+        headers={
+            'anti-csrf': response_9.headers.get('anti-csrf')})
     assert response_10.json == {'success': True}
     assert response_10.status_code == 200
 
     request_11 = app.test_client()
-    request_11.set_cookie('localhost', 'sRefreshToken', cookies_9['sRefreshToken']['value'])
+    request_11.set_cookie(
+        'localhost',
+        'sRefreshToken',
+        cookies_9['sRefreshToken']['value'])
     response_11 = request_11.post('/refresh')
     assert response_11.json == {'error': 'unauthorised'}
     assert response_11.status_code == 440
