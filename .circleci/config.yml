@@ -8,7 +8,7 @@ jobs:
       - run: make dev-install
       - run: pip install setuptools wheel twine
       - run: python3 setup.py sdist bdist_wheel
-      - run: twine upload --username $USERNAME --password $PASSWORD dist/*
+      - run: twine upload -u $USERNAME -p $PASSWORD dist/*
   test:
     docker:
       - image: rishabhpoddar/supertokens_python_driver_testing
