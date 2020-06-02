@@ -68,6 +68,7 @@ def __manage_cookies_post_response(session, response):
             attach_anti_csrf_header(response, anti_csrf_token)
 
 
+# TODO: Change name to supertokens_middleware
 def session_required(anti_csrf_check=None):
     def session_verify(f):
         @wraps(f)
@@ -108,6 +109,7 @@ def session_required(anti_csrf_check=None):
 #     return wrapped_function
 
 
+# TODO: merge with supertokens_middleware
 def session_refresh_api(f):
     @wraps(f)
     def wrapped_function(*args, **kwargs):

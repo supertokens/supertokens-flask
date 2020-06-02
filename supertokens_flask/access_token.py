@@ -42,7 +42,7 @@ def get_info_from_access_token(
                 (expiry_time is None) or \
                 (time_created is None):
             print(session_handle, user_data, refresh_token_hash_1, user_data, anti_csrf_token, expiry_time,
-                  time_created, do_anti_csrf_check, flush=True)
+                  time_created, do_anti_csrf_check, flush=True) # TODO: please remove all print statement
             raise Exception(
                 'Access token does not contain all the information. Maybe the structure has changed?')
 
@@ -60,4 +60,4 @@ def get_info_from_access_token(
             'timeCreated': time_created
         }
     except Exception as e:
-        raise_general_exception(e)
+        raise_general_exception(e)  # TODO: supposed to be try refresh token error

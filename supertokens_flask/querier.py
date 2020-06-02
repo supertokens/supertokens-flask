@@ -169,6 +169,7 @@ class Querier:
                 ':' + str(current_host['port']) + path
             response = http_function(url)
 
+            # TODO: actually you are supposed to retry it if the instance is down. If you get a 5xx error, it means the instance is running, hence, throw an error
             if is_5xx_error(response.status_code):
                 return self.__send_request_helper(
                     path, method, http_function, no_of_tries - 1)
