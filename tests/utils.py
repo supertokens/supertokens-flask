@@ -85,7 +85,7 @@ def __stop_st(retry=50):
             raise Exception('')
         sleep(0.5)
         __stop_st(retry - 1)
-    sleep(1)
+        sleep(1)
 
 
 def start_st(host='localhost', port='3567'):
