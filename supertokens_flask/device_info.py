@@ -41,6 +41,7 @@ class DeviceInfo:
     def get_frontend_sdk(self):
         return self.__frontend_sdk
 
+    # TODO: what is the threading model for flask? This might be accessed from different threads will require synchronisation.
     def add_to_frontend_sdk(self, sdk):
         exists = False
         for i in self.__frontend_sdk:

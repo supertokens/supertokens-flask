@@ -70,7 +70,7 @@ class Session:
         self.__jwt_payload = result['session']['userDataInJWT']
         if 'accessToken' in result and result['accessToken'] is not None:
             self.__access_token = result['accessToken']['token']
-            attach_access_token_to_cookie(
+            attach_access_token_to_cookie(  # TODO: Check if self.__response is not None:?
                 self.__response,
                 result['access_token']['token'],
                 result['access_token']['expiry'],

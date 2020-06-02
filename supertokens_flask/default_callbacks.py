@@ -19,7 +19,7 @@ from supertokens_flask.handshake_info import HandshakeInfo
 from supertokens_flask.constants import ERROR_MESSAGE_KEY
 from supertokens_flask.session_helper import revoke_session
 
-
+# TODO: what happens if this function throws an error?
 def default_unauthorised_callback(e):
     return jsonify({ERROR_MESSAGE_KEY: 'unauthorised'}
                    ), HandshakeInfo.get_instance().session_expired_status_code

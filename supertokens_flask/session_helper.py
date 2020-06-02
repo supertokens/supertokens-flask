@@ -37,7 +37,7 @@ from supertokens_flask.access_token import get_info_from_access_token
 from os import environ
 
 
-class ProcessState:
+class ProcessState: # TODO: move this to a different file?
     __instance = None
 
     def __init__(self):

@@ -50,7 +50,7 @@ def set_options_api_headers(response):
         response,
         'Access-Control-Allow-Headers',
         ANTI_CSRF_HEADER_SET_KEY)
-    set_header(response, "Access-Control-Allow-Headers",
+    set_header(response, "Access-Control-Allow-Headers",    # TODO: use from constants.py file?
                SUPERTOKENS_SDK_NAME_HEADER_SET_KEY)
     set_header(response, "Access-Control-Allow-Headers",
                SUPERTOKENS_SDK_VERSION_HEADER_SET_KEY)
@@ -74,7 +74,7 @@ def get_cookie(request, key):
         return None
     return unquote(cookie_val)
 
-
+# TODO: ceil expires instead of flooring it.
 def set_cookie(response, key, value, expires, path,
                domain, secure, http_only, same_site):
     response.set_cookie(key=key, value=quote(value, encoding='utf-8'), expires=expires // 1000, path=path,
@@ -104,7 +104,7 @@ def clear_session_from_cookie(response, domain, secure, access_token_path, refre
     set_header(response, ID_REFRESH_TOKEN_HEADER_SET_KEY, "remove")
     set_header(
         response,
-        "Access-Control-Expose-Headers",
+        "Access-Control-Expose-Headers",    # TODO: shouldn't you use ACCESS_CONTROL_EXPOSE_HEADERS?
         ID_REFRESH_TOKEN_HEADER_SET_KEY)
 
 
@@ -148,7 +148,7 @@ def get_id_refresh_token_from_cookie(request):
     return get_cookie(request, ID_REFRESH_TOKEN_COOKIE_KEY)
 
 
-def clear_cookies(response):
+def clear_cookies(response):    # TODO: this is OK, but why do you need to have two functions for clearing session? This one and the one above.
     if response is not None:
         handshake_info = HandshakeInfo.get_instance()
         clear_session_from_cookie(

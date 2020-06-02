@@ -36,6 +36,7 @@ class HandshakeInfo:
         self.same_site = info['cookieSameSite']
         self.session_expired_status_code = info['sessionExpiredStatusCode']
 
+    # TODO: think about race condition here and in other methods of this class
     @staticmethod
     def get_instance():
         if HandshakeInfo.__instance is None:
@@ -55,5 +56,5 @@ class HandshakeInfo:
         self.jwt_signing_public_key = new_key
         self.jwt_signing_public_key_expiry_time = new_expiry
 
-    def get_session_expired_status_code(self):
+    def get_session_expired_status_code(self):  # TODO: Why do you need this function? Can't you directly access this variable from the instance?
         return self.session_expired_status_code
