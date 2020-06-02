@@ -41,7 +41,6 @@ def get_info_from_access_token(
                 (anti_csrf_token is None and do_anti_csrf_check) or \
                 (expiry_time is None) or \
                 (time_created is None):
-            # TODO: please remove all print statement -- DONE
             raise Exception(
                 'Access token does not contain all the information. Maybe the structure has changed?')
 
@@ -59,4 +58,4 @@ def get_info_from_access_token(
             'timeCreated': time_created
         }
     except Exception as e:
-        raise_try_refresh_token_exception(e)  # TODO: supposed to be try refresh token error -- DONE
+        raise_try_refresh_token_exception(e)

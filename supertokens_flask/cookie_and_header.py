@@ -52,7 +52,7 @@ def set_options_api_headers(response):
         response,
         ACCESS_CONTROL_ALLOW_HEADERS,
         ANTI_CSRF_HEADER_SET_KEY)
-    set_header(response, ACCESS_CONTROL_ALLOW_HEADERS,    # TODO: use from constants.py file? -- OKAY, changed
+    set_header(response, ACCESS_CONTROL_ALLOW_HEADERS,
                SUPERTOKENS_SDK_NAME_HEADER_SET_KEY)
     set_header(response, ACCESS_CONTROL_ALLOW_HEADERS,
                SUPERTOKENS_SDK_VERSION_HEADER_SET_KEY)
@@ -77,7 +77,6 @@ def get_cookie(request, key):
     return unquote(cookie_val)
 
 
-# TODO: ceil expires instead of flooring it. -- DONE
 def set_cookie(response, key, value, expires, path,
                domain, secure, http_only, same_site):
     response.set_cookie(key=key, value=quote(value, encoding='utf-8'), expires=expires // 1000, path=path,
@@ -136,8 +135,7 @@ def get_id_refresh_token_from_cookie(request):
     return get_cookie(request, ID_REFRESH_TOKEN_COOKIE_KEY)
 
 
-def clear_cookies(response):  # TODO: this is OK, but why do you need to have two functions for clearing session?
-    # This one and the one above. -- Above function removed
+def clear_cookies(response):
     if response is not None:
         handshake_info = HandshakeInfo.get_instance()
         domain = handshake_info.cookie_domain
@@ -155,5 +153,5 @@ def clear_cookies(response):  # TODO: this is OK, but why do you need to have tw
         set_header(response, ID_REFRESH_TOKEN_HEADER_SET_KEY, "remove")
         set_header(
             response,
-            ACCESS_CONTROL_EXPOSE_HEADERS,  # TODO: shouldn't you use ACCESS_CONTROL_EXPOSE_HEADERS? -- DONE
+            ACCESS_CONTROL_EXPOSE_HEADERS,
             ID_REFRESH_TOKEN_HEADER_SET_KEY)

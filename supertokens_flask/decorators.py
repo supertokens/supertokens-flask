@@ -69,7 +69,6 @@ def __manage_cookies_post_response(session, response):
             attach_anti_csrf_header(response, anti_csrf_token)
 
 
-# TODO: Change name to supertokens_middleware
 def supertokens_middleware(anti_csrf_check=None):
     def session_verify(f):
         @wraps(f)
@@ -81,7 +80,7 @@ def supertokens_middleware(anti_csrf_check=None):
             else:
                 do_anti_csrf_check = anti_csrf_check
 
-            if request.path == HandshakeInfo.get_instance().refresh_token_path:
+            if request.path == HandshakeInfo.get_instance().refresh_token_path: # TODO: do exactly like in laravel please.
                 if request.method != 'POST':
                     return f(*args, **kwargs)
                 session = refresh_session(None)
@@ -119,7 +118,6 @@ def supertokens_middleware(anti_csrf_check=None):
 #     return wrapped_function
 
 
-# TODO: merge with supertokens_middleware -- DONE
 # def supertokens_middleware(f):
 #     @wraps(f)
 #     def wrapped_function(*args, **kwargs):

@@ -213,8 +213,8 @@ def set_relevant_headers_for_options_api(response):
     set_options_api_headers(response)
 
 
-class SuperTokens:  # TODO: change to SuperTokens
-    def __init__(self, app):    # TODO: since the user has to call this anyway, why not make them pass in the config here as well?
+class SuperTokens:
+    def __init__(self, app):
         self.__unauthorised_callback = default_unauthorised_callback
         self.__try_refresh_token_callback = default_try_refresh_token_callback
         self.__token_theft_detected_callback = default_token_theft_detected_callback
@@ -226,7 +226,7 @@ class SuperTokens:  # TODO: change to SuperTokens
         @app.errorhandler(SuperTokensUnauthorisedError)
         def handle_unauthorised(e):
             response = make_response(self.__unauthorised_callback(e))
-            clear_cookies(response)  # TODO: in laravel, we give the response to the callback. And that response has already had the cookies cleared.. Why the other way around here?
+            clear_cookies(response)
             return response
 
         @app.errorhandler(SuperTokensTryRefreshTokenError)
@@ -238,7 +238,7 @@ class SuperTokens:  # TODO: change to SuperTokens
         def handle_token_theft(e):
             response = make_response(
                 self.__token_theft_detected_callback(
-                    e.session_handle, e.user_id))   # TODO: Why not use the functions in the error as opposed to directly accessing the variable?
+                    e.session_handle, e.user_id))
             clear_cookies(response)
             return response
 

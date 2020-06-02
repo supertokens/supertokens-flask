@@ -18,7 +18,7 @@ from os import environ
 from supertokens_flask.exceptions import raise_general_exception
 
 
-class ProcessState:  # TODO: move this to a different file? -- DONE
+class ProcessState:
     __instance = None
 
     def __init__(self):

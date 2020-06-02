@@ -56,5 +56,5 @@ class HandshakeInfo:
         self.jwt_signing_public_key = new_key
         self.jwt_signing_public_key_expiry_time = new_expiry
 
-    def get_session_expired_status_code(self):  # TODO: Why do you need this function? Can't you directly access this variable from the instance?
+    def get_session_expired_status_code(self):
         return self.session_expired_status_code
