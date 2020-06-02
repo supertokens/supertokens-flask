@@ -34,37 +34,8 @@ from supertokens_flask.exceptions import (
 )
 from supertokens_flask.utils import get_timestamp_ms
 from supertokens_flask.access_token import get_info_from_access_token
+from supertokens_flask.process_state import ProcessState
 from os import environ
-
-
-class ProcessState: # TODO: move this to a different file?
-    __instance = None
-
-    def __init__(self):
-        self.service_called = False
-
-    @staticmethod
-    def __get_instance():
-        if ProcessState.__instance is None:
-            ProcessState.__instance = ProcessState()
-        return ProcessState.__instance
-
-    @staticmethod
-    def update_service_called(b):
-        instance = ProcessState.__get_instance()
-        instance.service_called = b
-
-    @staticmethod
-    def get_service_called():
-        return ProcessState.__get_instance().service_called
-
-    @staticmethod
-    def reset():
-        if ('SUPERTOKENS_ENV' not in environ) or (
-                environ['SUPERTOKENS_ENV'] != 'testing'):
-            raise_general_exception(
-                'calling testing function in non testing env')
-        ProcessState.__instance = None
 
 
 def init(hosts):

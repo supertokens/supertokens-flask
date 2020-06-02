@@ -20,10 +20,9 @@ from .utils import (
     get_unix_timestamp
 )
 from supertokens_flask import (
-    session_required,
-    session_refresh_api,
+    supertokens_middleware,
     create_new_session,
-    Supertokens
+    SuperTokens
 )
 from pytest import fixture
 from flask import request, Flask, jsonify, g, make_response
@@ -43,13 +42,7 @@ def teardown_function(f):
 @fixture(scope='function')
 def app():
     app = Flask(__name__)
-
-    @app.errorhandler(Exception)
-    def handle(e):
-        print(e)
-        raise e
-
-    supertokens = Supertokens(app)
+    supertokens = SuperTokens(app)
 
     def ff(e):
         return jsonify({'error_msg': 'try refresh token'}), 401
@@ -63,12 +56,12 @@ def app():
         return response
 
     @app.route('/refresh', methods=['POST'])
-    @session_refresh_api
+    @supertokens_middleware
     def refresh():
         return {'userId': g.supertokens_session.get_user_id()}
 
     @app.route('/info', methods=['GET', 'OPTIONS'])
-    @session_required
+    @supertokens_middleware
     def info():
         if request.method == 'OPTIONS':
             return jsonify({'method': 'option'})
@@ -76,7 +69,7 @@ def app():
         return jsonify({'userId': g.supertokens_session.get_user_id()})
 
     @app.route('/logout', methods=['POST'])
-    @session_required()
+    @supertokens_middleware()
     def logout():
         g.supertokens_session.revoke_session()
         return jsonify({'success': True})

@@ -213,7 +213,7 @@ def set_relevant_headers_for_options_api(response):
     set_options_api_headers(response)
 
 
-class Supertokens:  # TODO: change to SuperTokens
+class SuperTokens:  # TODO: change to SuperTokens
     def __init__(self, app):    # TODO: since the user has to call this anyway, why not make them pass in the config here as well?
         self.__unauthorised_callback = default_unauthorised_callback
         self.__try_refresh_token_callback = default_try_refresh_token_callback
@@ -226,7 +226,7 @@ class Supertokens:  # TODO: change to SuperTokens
         @app.errorhandler(SuperTokensUnauthorisedError)
         def handle_unauthorised(e):
             response = make_response(self.__unauthorised_callback(e))
-            clear_cookies(response) # TODO: in laravel, we give the response to the callback. And that response has already had the cookies cleared.. Why the other way around here?
+            clear_cookies(response)  # TODO: in laravel, we give the response to the callback. And that response has already had the cookies cleared.. Why the other way around here?
             return response
 
         @app.errorhandler(SuperTokensTryRefreshTokenError)

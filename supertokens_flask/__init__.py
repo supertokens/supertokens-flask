@@ -15,11 +15,10 @@ under the License.
 """
 
 from .decorators import (
-    session_required,
-    session_refresh_api
+    supertokens_middleware
 )
 from .supertokens import (
-    Supertokens,
+    SuperTokens,
     get_session,
     revoke_session,
     refresh_session,

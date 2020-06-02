@@ -19,17 +19,16 @@ from flask import (
 )
 from supertokens_flask import (
     handshake_info,
-    session_required,
-    session_refresh_api,
+    supertokens_middleware,
     revoke_all_sessions_for_user,
-    Supertokens, create_new_session,
+    SuperTokens, create_new_session,
     set_relevant_headers_for_options_api
 )
 from json import dumps
 
 app = Flask(__name__, static_url_path='')
 app.config['SUPERTOKENS_HOSTS'] = [{'hostname': '127.0.0.1', 'port': 9000}]
-supertokens = Supertokens(app)
+supertokens = SuperTokens(app)
 
 
 def try_refresh_token(e):
@@ -124,7 +123,7 @@ def multiple_interceptors():
 
 
 @app.route('/', methods=['GET', 'OPTIONS'])
-@session_required(True)
+@supertokens_middleware(True)
 def get_info():
     if request.method == 'OPTIONS':
         return send_options_api_response()
@@ -146,7 +145,7 @@ def testing():
 
 
 @app.route('/logout', methods=['POST', 'OPTIONS'])
-@session_required
+@supertokens_middleware
 def logout():
     if request.method == 'OPTIONS':
         return send_options_api_response()
@@ -157,7 +156,7 @@ def logout():
 
 
 @app.route('/revokeAll', methods=['POST', 'OPTIONS'])
-@session_required(True)
+@supertokens_middleware(True)
 def revoke_all():
     if request.method == 'OPTIONS':
         return send_options_api_response()
@@ -167,7 +166,7 @@ def revoke_all():
 
 
 @app.route('/refresh', methods=['POST', 'OPTIONS'])
-@session_refresh_api
+@supertokens_middleware
 def refresh():
     if request.method == 'OPTIONS':
         return send_options_api_response()

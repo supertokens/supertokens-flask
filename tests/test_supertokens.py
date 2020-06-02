@@ -48,7 +48,7 @@ from supertokens_flask.supertokens import (
     refresh_session,
     revoke_session,
     get_session,
-    Supertokens
+    SuperTokens
 )
 from supertokens_flask.session_helper import ProcessState
 from time import time
@@ -71,12 +71,7 @@ def teardown_function(f):
 def app():
     app = Flask(__name__)
 
-    @app.errorhandler(Exception)
-    def handle(e):
-        print(e)
-        raise e
-
-    supertokens = Supertokens(app)
+    supertokens = SuperTokens(app)
 
     def ff(e):
         return jsonify({'error_msg': 'try refresh token'}), 401

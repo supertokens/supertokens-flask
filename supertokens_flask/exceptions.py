@@ -53,12 +53,6 @@ class SuperTokensTokenTheftError(SuperTokensError):
         self.user_id = user_id
         self.session_handle = session_handle
 
-    def get_user_id(self):
-        return self.user_id
-
-    def get_session_handle(self):
-        return self.session_handle
-
 
 class SuperTokensUnauthorisedError(SuperTokensError):
     pass

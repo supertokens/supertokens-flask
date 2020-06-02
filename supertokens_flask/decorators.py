@@ -24,6 +24,7 @@ from supertokens_flask.cookie_and_header import (
     attach_id_refresh_token_to_cookie_and_header,
     attach_refresh_token_to_cookie
 )
+from supertokens_flask.handshake_info import HandshakeInfo
 
 
 def __manage_cookies_post_response(session, response):
@@ -69,7 +70,7 @@ def __manage_cookies_post_response(session, response):
 
 
 # TODO: Change name to supertokens_middleware
-def session_required(anti_csrf_check=None):
+def supertokens_middleware(anti_csrf_check=None):
     def session_verify(f):
         @wraps(f)
         def wrapped_function(*args, **kwargs):
@@ -79,6 +80,15 @@ def session_required(anti_csrf_check=None):
                 do_anti_csrf_check = request.method != 'GET'
             else:
                 do_anti_csrf_check = anti_csrf_check
+
+            if request.path == HandshakeInfo.get_instance().refresh_token_path:
+                if request.method != 'POST':
+                    return f(*args, **kwargs)
+                session = refresh_session(None)
+                g.supertokens_session = session
+                response = make_response(f(*args, **kwargs))
+                __manage_cookies_post_response(session, response)
+                return response
 
             session = get_session(None, do_anti_csrf_check)
             g.supertokens_session = session
@@ -109,15 +119,15 @@ def session_required(anti_csrf_check=None):
 #     return wrapped_function
 
 
-# TODO: merge with supertokens_middleware
-def session_refresh_api(f):
-    @wraps(f)
-    def wrapped_function(*args, **kwargs):
-        if request.method != 'POST':
-            return f(*args, **kwargs)
-        session = refresh_session(None)
-        g.supertokens_session = session
-        response = make_response(f(*args, **kwargs))
-        __manage_cookies_post_response(session, response)
-        return response
-    return wrapped_function
+# TODO: merge with supertokens_middleware -- DONE
+# def supertokens_middleware(f):
+#     @wraps(f)
+#     def wrapped_function(*args, **kwargs):
+#         if request.method != 'POST':
+#             return f(*args, **kwargs)
+#         session = refresh_session(None)
+#         g.supertokens_session = session
+#         response = make_response(f(*args, **kwargs))
+#         __manage_cookies_post_response(session, response)
+#         return response
+#     return wrapped_function

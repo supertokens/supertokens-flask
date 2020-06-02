@@ -17,7 +17,7 @@ under the License.
 from flask import Flask, make_response, jsonify
 from pytest import fixture
 
-from supertokens_flask import Supertokens, create_new_session, session_required
+from supertokens_flask import SuperTokens, create_new_session, supertokens_middleware
 from supertokens_flask.device_info import DeviceInfo
 from .utils import (
     reset, setup_st, clean_st, start_st, extract_all_cookies
@@ -41,7 +41,7 @@ def teardown_function(f):
 def app():
     app = Flask(__name__)
 
-    Supertokens(app)
+    SuperTokens(app)
 
     @app.route('/login')
     def login():
@@ -51,7 +51,7 @@ def app():
         return response
 
     @app.route('/info')
-    @session_required()
+    @supertokens_middleware()
     def info():
         return {}
 

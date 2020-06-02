@@ -17,11 +17,13 @@ under the License.
 from supertokens_flask.constants import (
     ACCESS_TOKEN_COOKIE_KEY,
     REFRESH_TOKEN_COOKIE_KEY,
-    ID_REFRESH_TOKEN_COOKIE_KEY,
     ANTI_CSRF_HEADER_SET_KEY,
     ANTI_CSRF_HEADER_GET_KEY,
+    ID_REFRESH_TOKEN_COOKIE_KEY,
+    ACCESS_CONTROL_ALLOW_HEADERS,
     ACCESS_CONTROL_EXPOSE_HEADERS,
     ID_REFRESH_TOKEN_HEADER_SET_KEY,
+    ACCESS_CONTROL_ALLOW_CREDENTIALS,
     SUPERTOKENS_SDK_NAME_HEADER_GET_KEY,
     SUPERTOKENS_SDK_NAME_HEADER_SET_KEY,
     SUPERTOKENS_SDK_VERSION_HEADER_GET_KEY,
@@ -48,13 +50,13 @@ def save_frontend_info_from_request(request):
 def set_options_api_headers(response):
     set_header(
         response,
-        'Access-Control-Allow-Headers',
+        ACCESS_CONTROL_ALLOW_HEADERS,
         ANTI_CSRF_HEADER_SET_KEY)
-    set_header(response, "Access-Control-Allow-Headers",    # TODO: use from constants.py file?
+    set_header(response, ACCESS_CONTROL_ALLOW_HEADERS,    # TODO: use from constants.py file? -- OKAY, changed
                SUPERTOKENS_SDK_NAME_HEADER_SET_KEY)
-    set_header(response, "Access-Control-Allow-Headers",
+    set_header(response, ACCESS_CONTROL_ALLOW_HEADERS,
                SUPERTOKENS_SDK_VERSION_HEADER_SET_KEY)
-    set_header(response, 'Access-Control-Allow-Credentials', 'true')
+    set_header(response, ACCESS_CONTROL_ALLOW_CREDENTIALS, 'true')
 
 
 def set_header(response, key, value):
@@ -74,7 +76,8 @@ def get_cookie(request, key):
         return None
     return unquote(cookie_val)
 
-# TODO: ceil expires instead of flooring it.
+
+# TODO: ceil expires instead of flooring it. -- DONE
 def set_cookie(response, key, value, expires, path,
                domain, secure, http_only, same_site):
     response.set_cookie(key=key, value=quote(value, encoding='utf-8'), expires=expires // 1000, path=path,
@@ -85,27 +88,12 @@ def attach_anti_csrf_header(response, value):
     set_header(response, ANTI_CSRF_HEADER_SET_KEY, value)
     set_header(
         response,
-        'Access-Control-Expose-Headers',
+        ACCESS_CONTROL_EXPOSE_HEADERS,
         ANTI_CSRF_HEADER_SET_KEY)
 
 
 def get_anti_csrf_header(request):
     return get_header(request, ANTI_CSRF_HEADER_GET_KEY)
-
-
-def clear_session_from_cookie(response, domain, secure, access_token_path, refresh_token_path,
-                              id_refresh_token_path, same_site):
-    set_cookie(response, ACCESS_TOKEN_COOKIE_KEY, '', 0, access_token_path,
-               domain, secure, True, same_site)
-    set_cookie(response, ID_REFRESH_TOKEN_COOKIE_KEY, '', 0,
-               id_refresh_token_path, domain, secure, True, same_site)
-    set_cookie(response, REFRESH_TOKEN_COOKIE_KEY, '', 0, refresh_token_path,
-               domain, secure, True, same_site)
-    set_header(response, ID_REFRESH_TOKEN_HEADER_SET_KEY, "remove")
-    set_header(
-        response,
-        "Access-Control-Expose-Headers",    # TODO: shouldn't you use ACCESS_CONTROL_EXPOSE_HEADERS?
-        ID_REFRESH_TOKEN_HEADER_SET_KEY)
 
 
 def attach_access_token_to_cookie(
@@ -148,15 +136,24 @@ def get_id_refresh_token_from_cookie(request):
     return get_cookie(request, ID_REFRESH_TOKEN_COOKIE_KEY)
 
 
-def clear_cookies(response):    # TODO: this is OK, but why do you need to have two functions for clearing session? This one and the one above.
+def clear_cookies(response):  # TODO: this is OK, but why do you need to have two functions for clearing session?
+    # This one and the one above. -- Above function removed
     if response is not None:
         handshake_info = HandshakeInfo.get_instance()
-        clear_session_from_cookie(
+        domain = handshake_info.cookie_domain
+        secure = handshake_info.cookie_secure
+        access_token_path = handshake_info.access_token_path
+        refresh_token_path = handshake_info.refresh_token_path
+        id_refresh_token_path = handshake_info.id_refresh_token_path
+        same_site = handshake_info.same_site
+        set_cookie(response, ACCESS_TOKEN_COOKIE_KEY, '', 0, access_token_path,
+                   domain, secure, True, same_site)
+        set_cookie(response, ID_REFRESH_TOKEN_COOKIE_KEY, '', 0,
+                   id_refresh_token_path, domain, secure, True, same_site)
+        set_cookie(response, REFRESH_TOKEN_COOKIE_KEY, '', 0, refresh_token_path,
+                   domain, secure, True, same_site)
+        set_header(response, ID_REFRESH_TOKEN_HEADER_SET_KEY, "remove")
+        set_header(
             response,
-            handshake_info.cookie_domain,
-            handshake_info.cookie_secure,
-            handshake_info.access_token_path,
-            handshake_info.refresh_token_path,
-            handshake_info.id_refresh_token_path,
-            handshake_info.same_site
-        )
+            ACCESS_CONTROL_EXPOSE_HEADERS,  # TODO: shouldn't you use ACCESS_CONTROL_EXPOSE_HEADERS? -- DONE
+            ID_REFRESH_TOKEN_HEADER_SET_KEY)

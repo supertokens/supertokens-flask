@@ -20,8 +20,8 @@ extras_require = {
 
 setup(
     name="supertokens_flask",
-    version="0.0.2",
-    author="Supertokens",
+    version="0.0.3",
+    author="SuperTokens",
     license="Apache 2.0",
     author_email="team@supertokens.io",
     description="SuperTokens session management solution for flask",

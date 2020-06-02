@@ -16,7 +16,7 @@ under the License.
 
 from supertokens_flask.jwt import get_payload
 from supertokens_flask.utils import sanitize_number, sanitize_string, get_timestamp_ms
-from supertokens_flask.exceptions import raise_general_exception
+from supertokens_flask.exceptions import raise_try_refresh_token_exception
 
 
 def get_info_from_access_token(
@@ -41,8 +41,7 @@ def get_info_from_access_token(
                 (anti_csrf_token is None and do_anti_csrf_check) or \
                 (expiry_time is None) or \
                 (time_created is None):
-            print(session_handle, user_data, refresh_token_hash_1, user_data, anti_csrf_token, expiry_time,
-                  time_created, do_anti_csrf_check, flush=True) # TODO: please remove all print statement
+            # TODO: please remove all print statement -- DONE
             raise Exception(
                 'Access token does not contain all the information. Maybe the structure has changed?')
 
@@ -60,4 +59,4 @@ def get_info_from_access_token(
             'timeCreated': time_created
         }
     except Exception as e:
-        raise_general_exception(e)  # TODO: supposed to be try refresh token error
+        raise_try_refresh_token_exception(e)  # TODO: supposed to be try refresh token error -- DONE
