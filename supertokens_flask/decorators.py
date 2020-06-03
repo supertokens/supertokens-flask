@@ -81,10 +81,7 @@ def supertokens_middleware(anti_csrf_check=None):
                 do_anti_csrf_check = anti_csrf_check
 
             refresh_path = HandshakeInfo.get_instance().refresh_token_path
-            if request.path in (refresh_path, refresh_path + '/', '/' + refresh_path + '/' + refresh_path + '/'):
-                # TODO: do exactly like in laravel please. -- DONE
-                if request.method != 'POST':
-                    return f(*args, **kwargs)
+            if request.path in (refresh_path, refresh_path + '/', '/' + refresh_path + '/' + refresh_path + '/') and request.method == 'POST':
                 session = refresh_session(None)
                 g.supertokens = session
                 response = make_response(f(*args, **kwargs))

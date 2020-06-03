@@ -73,7 +73,7 @@ class Session:
             if self.__response is None:
                 self.new_access_token_info = result['accessToken']
             else:
-                attach_access_token_to_cookie(  # TODO: Check if self.__response is not None:? -- DONE
+                attach_access_token_to_cookie(
                     self.__response,
                     result['access_token']['token'],
                     result['access_token']['expiry'],
