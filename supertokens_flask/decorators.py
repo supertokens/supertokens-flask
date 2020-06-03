@@ -86,13 +86,13 @@ def supertokens_middleware(anti_csrf_check=None):
                 if request.method != 'POST':
                     return f(*args, **kwargs)
                 session = refresh_session(None)
-                g.supertokens_session = session
+                g.supertokens = session
                 response = make_response(f(*args, **kwargs))
                 __manage_cookies_post_response(session, response)
                 return response
 
             session = get_session(None, do_anti_csrf_check)
-            g.supertokens_session = session
+            g.supertokens = session
             response = make_response(f(*args, **kwargs))
             __manage_cookies_post_response(session, response)
             return response

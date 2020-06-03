@@ -150,7 +150,7 @@ def logout():
     if request.method == 'OPTIONS':
         return send_options_api_response()
     response = make_response('success', 200)
-    g.supertokens_session.revoke_session()
+    g.supertokens.revoke_session()
     attach_credentials_headers(response)
     return response
 
@@ -161,7 +161,7 @@ def revoke_all():
     if request.method == 'OPTIONS':
         return send_options_api_response()
     response = make_response('success', 200)
-    revoke_all_sessions_for_user(g.supertokens_session.get_user_id())
+    revoke_all_sessions_for_user(g.supertokens.get_user_id())
     return response
 
 

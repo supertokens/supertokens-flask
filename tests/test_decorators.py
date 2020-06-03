@@ -58,7 +58,7 @@ def app():
     @app.route('/refresh', methods=['POST'])
     @supertokens_middleware
     def refresh():
-        return {'userId': g.supertokens_session.get_user_id()}
+        return {'userId': g.supertokens.get_user_id()}
 
     @app.route('/info', methods=['GET', 'OPTIONS'])
     @supertokens_middleware
@@ -66,12 +66,12 @@ def app():
         if request.method == 'OPTIONS':
             return jsonify({'method': 'option'})
 
-        return jsonify({'userId': g.supertokens_session.get_user_id()})
+        return jsonify({'userId': g.supertokens.get_user_id()})
 
     @app.route('/logout', methods=['POST'])
     @supertokens_middleware()
     def logout():
-        g.supertokens_session.revoke_session()
+        g.supertokens.revoke_session()
         return jsonify({'success': True})
 
     return app
