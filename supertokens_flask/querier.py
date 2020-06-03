@@ -39,10 +39,12 @@ from supertokens_flask.device_info import (
 import requests
 from json import JSONDecodeError
 from os import environ
+from threading import Lock
 
 
 class Querier:
     __instance = None
+    __lock = Lock()
 
     def __init__(self, hosts=None):
         if hosts is None:
@@ -71,28 +73,34 @@ class Querier:
         if self.__api_version is not None:
             return self.__api_version
 
-        def f(url):
-            return requests.get(url)
+        with Querier.__lock:
+            if self.__api_version is not None:
+                return self.__api_version
 
-        response = self.__send_request_helper(
-            API_VERSION, 'GET', f, len(self.__hosts))
-        cdi_supported_by_server = response['versions']
-        api_version = find_max_version(
-            cdi_supported_by_server,
-            SUPPORTED_CDI_VERSIONS)
+            def f(url):
+                return requests.get(url)
 
-        if api_version is None:
-            raise_general_exception('The running SuperTokens core version is not compatible with this Flask SDK. '
-                                    'Please visit https://supertokens.io/docs/community/compatibility to find the '
-                                    'right versions')
+            response = self.__send_request_helper(
+                API_VERSION, 'GET', f, len(self.__hosts))
+            cdi_supported_by_server = response['versions']
+            api_version = find_max_version(
+                cdi_supported_by_server,
+                SUPPORTED_CDI_VERSIONS)
 
-        self.__api_version = api_version
-        return self.__api_version
+            if api_version is None:
+                raise_general_exception('The running SuperTokens core version is not compatible with this Flask SDK. '
+                                        'Please visit https://supertokens.io/docs/community/compatibility to find the '
+                                        'right versions')
+
+            self.__api_version = api_version
+            return self.__api_version
 
     @staticmethod
     def get_instance():
         if Querier.__instance is None:
-            Querier.__instance = Querier()
+            with Querier.__lock:
+                if Querier.__instance is None:
+                    Querier.__instance = Querier()
         return Querier.__instance
 
     @staticmethod

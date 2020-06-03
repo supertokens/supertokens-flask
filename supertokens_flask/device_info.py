@@ -16,10 +16,12 @@ under the License.
 
 from supertokens_flask.exceptions import raise_general_exception
 from os import environ
+from threading import Lock
 
 
 class DeviceInfo:
     __instance = None
+    __lock = Lock()
 
     def __init__(self):
         self.__frontend_sdk = []
@@ -27,7 +29,9 @@ class DeviceInfo:
     @staticmethod
     def get_instance():
         if DeviceInfo.__instance is None:
-            DeviceInfo.__instance = DeviceInfo()
+            with DeviceInfo.__lock:
+                if DeviceInfo.__instance is None:
+                    DeviceInfo.__instance = DeviceInfo()
         return DeviceInfo.__instance
 
     @staticmethod
@@ -41,13 +45,15 @@ class DeviceInfo:
     def get_frontend_sdk(self):
         return self.__frontend_sdk
 
-    # TODO: what is the threading model for flask? This might be accessed from different threads will require synchronisation.
+    # TODO: what is the threading model for flask? -- Code updated
+    # This might be accessed from different threads will require synchronisation.
     def add_to_frontend_sdk(self, sdk):
-        exists = False
-        for i in self.__frontend_sdk:
-            if i['name'] == sdk['name'] and i['version'] == sdk['version']:
-                exists = True
-                break
+        with DeviceInfo.__lock:
+            exists = False
+            for i in self.__frontend_sdk:
+                if i['name'] == sdk['name'] and i['version'] == sdk['version']:
+                    exists = True
+                    break
 
-        if not exists:
-            self.__frontend_sdk.append(sdk)
+            if not exists:
+                self.__frontend_sdk.append(sdk)
