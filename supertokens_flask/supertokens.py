@@ -85,7 +85,7 @@ def create_new_session(response, user_id, jwt_payload=None, session_data=None):
                    session['session']['userDataInJWT'], response)
 
 
-def get_session(response, do_anti_csrf_check):
+def get_session(response, enable_csrf_protection):
     save_frontend_info_from_request(request)
     access_token = get_access_token_from_cookie(request)
     if access_token is None:
@@ -93,7 +93,7 @@ def get_session(response, do_anti_csrf_check):
     try:
         anti_csrf_token = get_anti_csrf_header(request)
         id_refresh_token = get_id_refresh_token_from_cookie(request)
-        new_session = session_helper.get_session(access_token, anti_csrf_token, do_anti_csrf_check,
+        new_session = session_helper.get_session(access_token, anti_csrf_token, enable_csrf_protection,
                                                  id_refresh_token)
         if 'accessToken' in new_session:
             access_token = new_session['accessToken']['token']

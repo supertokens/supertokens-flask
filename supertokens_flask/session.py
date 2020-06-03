@@ -70,15 +70,18 @@ class Session:
         self.__jwt_payload = result['session']['userDataInJWT']
         if 'accessToken' in result and result['accessToken'] is not None:
             self.__access_token = result['accessToken']['token']
-            attach_access_token_to_cookie(  # TODO: Check if self.__response is not None:?
-                self.__response,
-                result['access_token']['token'],
-                result['access_token']['expiry'],
-                result['access_token']['domain'],
-                result['access_token']['cookiePath'],
-                result['access_token']['cookieSecure'],
-                result['access_token']['sameSite']
-            )
+            if self.__response is None:
+                self.new_access_token_info = result['accessToken']
+            else:
+                attach_access_token_to_cookie(  # TODO: Check if self.__response is not None:? -- DONE
+                    self.__response,
+                    result['access_token']['token'],
+                    result['access_token']['expiry'],
+                    result['access_token']['domain'],
+                    result['access_token']['cookiePath'],
+                    result['access_token']['cookieSecure'],
+                    result['access_token']['sameSite']
+                )
 
     def get_user_id(self):
         return self.__user_id

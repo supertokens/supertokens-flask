@@ -169,17 +169,14 @@ class Querier:
                 ':' + str(current_host['port']) + path
             response = http_function(url)
 
-            # TODO: actually you are supposed to retry it if the instance is down. If you get a 5xx error, it means the instance is running, hence, throw an error
-            if is_5xx_error(response.status_code):
-                return self.__send_request_helper(
-                    path, method, http_function, no_of_tries - 1)
+            # TODO: actually you are supposed to retry it if the instance is down. If you get a 5xx error, it means the instance is running, hence, throw an error -- DONE
 
             if ('SUPERTOKENS_ENV' in environ) and (
                     environ['SUPERTOKENS_ENV'] == 'testing'):
                 self.__hosts_alive_for_testing.add(
                     current_host['hostname'] + ':' + str(current_host['port']))
 
-            if is_4xx_error(response.status_code):
+            if is_4xx_error(response.status_code) or is_5xx_error(response.status_code):
                 raise_general_exception('SuperTokens core threw an error for a ' + method + ' request to path: ' +
                                         path + ' with status code: ' + str(response.status_code) + ' and message: ' +
                                         response.text)
