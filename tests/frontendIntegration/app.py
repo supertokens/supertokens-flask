@@ -128,7 +128,21 @@ def get_info():
     if request.method == 'OPTIONS':
         return send_options_api_response()
     Test.increment_get_session()
-    response = make_response('success', 200)
+    response = make_response(g.supertokens.get_user_id(), 200)
+    attach_credentials_headers(response)
+    response.headers['Cache-Control'] = 'no-cache, private'
+    return response
+
+
+@app.route('/update-jwt', methods=['GET', 'POST', 'OPTIONS'])
+@supertokens_middleware(True)
+def update_jwt():
+    if request.method == 'OPTIONS':
+        return send_options_api_response()
+    Test.increment_get_session()
+    if request.method == 'POST':
+        g.supertokens.update_jwt_payload(request.json)
+    response = make_response(jsonify(g.supertokens.get_jwt_payload()), 200)
     attach_credentials_headers(response)
     response.headers['Cache-Control'] = 'no-cache, private'
     return response
@@ -194,15 +208,6 @@ def get_session_called_info():
     return response
 
 
-@app.route('/getPackageVersion', methods=['GET', 'OPTIONS'])
-def get_package_version():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
-    response = make_response('4.1.3', 200)
-    response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:8080'
-    return response
-
-
 @app.route('/ping', methods=['GET', 'OPTIONS'])
 def ping():
     if request.method == 'OPTIONS':
@@ -224,7 +229,7 @@ def check_device_info():
         return send_options_api_response()
     sdk_name = request.headers.get('supertokens-sdk-name')
     sdk_version = request.headers.get('supertokens-sdk-version')
-    return 'true' if sdk_name == 'website' and sdk_version == '4.1.3' else 'false'
+    return 'true' if sdk_name == 'website' and type(sdk_version) == str else 'false'
 
 
 @app.route('/checkAllowCredentials', methods=['GET', 'OPTIONS'])
