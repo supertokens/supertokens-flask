@@ -38,7 +38,6 @@ class HandshakeInfo:
         self.same_site = info['cookieSameSite']
         self.session_expired_status_code = info['sessionExpiredStatusCode']
 
-    # TODO: think about race condition here and in other methods of this class -- Code updated
     @staticmethod
     def get_instance():
         if HandshakeInfo.__instance is None:
