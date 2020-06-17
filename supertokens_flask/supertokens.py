@@ -14,7 +14,14 @@ License for the specific language governing permissions and limitations
 under the License.
 """
 
-from supertokens_flask.constants import HOSTS_CONFIG
+from supertokens_flask.constants import (
+    HOSTS_CONFIG,
+    ACCESS_TOKEN_PATH_CONFIG,
+    REFRESH_TOKEN_PATH_CONFIG,
+    COOKIE_DOMAIN_CONFIG,
+    COOKIE_SECURE_CONFIG,
+    COOKIE_SAME_SITE_CONFIG
+)
 from supertokens_flask.exceptions import (
     raise_try_refresh_token_exception,
     raise_unauthorised_exception,
@@ -26,6 +33,7 @@ from supertokens_flask.session import Session
 from flask import request, make_response
 from supertokens_flask import session_helper
 from supertokens_flask.cookie_and_header import (
+    CookieConfig,
     clear_cookies,
     get_anti_csrf_header,
     attach_anti_csrf_header,
@@ -87,14 +95,16 @@ def create_new_session(response, user_id, jwt_payload=None, session_data=None):
 
 def get_session(response, enable_csrf_protection):
     save_frontend_info_from_request(request)
+    id_refresh_token = get_id_refresh_token_from_cookie(request)
+    if id_refresh_token is None:
+        raise_unauthorised_exception('id refresh token is missing in cookies')
     access_token = get_access_token_from_cookie(request)
     if access_token is None:
         raise_try_refresh_token_exception('access token missing in cookies')
     try:
         anti_csrf_token = get_anti_csrf_header(request)
         id_refresh_token = get_id_refresh_token_from_cookie(request)
-        new_session = session_helper.get_session(access_token, anti_csrf_token, enable_csrf_protection,
-                                                 id_refresh_token)
+        new_session = session_helper.get_session(access_token, anti_csrf_token, enable_csrf_protection)
         if 'accessToken' in new_session:
             access_token = new_session['accessToken']['token']
 
@@ -219,7 +229,14 @@ class SuperTokens:
         self.__try_refresh_token_callback = default_try_refresh_token_callback
         self.__token_theft_detected_callback = default_token_theft_detected_callback
         hosts = app.config.setdefault(HOSTS_CONFIG, None)
+        access_token_path = app.config.setdefault(ACCESS_TOKEN_PATH_CONFIG, None)
+        refresh_token_path = app.config.setdefault(REFRESH_TOKEN_PATH_CONFIG, None)
+        cookie_domain = app.config.setdefault(COOKIE_DOMAIN_CONFIG, None)
+        cookie_secure = app.config.setdefault(COOKIE_SECURE_CONFIG, None)
+        cookie_same_site = app.config.setdefault(COOKIE_SAME_SITE_CONFIG, None)
+
         session_helper.init(hosts)
+        CookieConfig.init(access_token_path, refresh_token_path, cookie_domain, cookie_secure, cookie_same_site)
         self.__set_error_handler_callbacks(app)
 
     def __set_error_handler_callbacks(self, app):

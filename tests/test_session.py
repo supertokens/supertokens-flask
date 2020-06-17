@@ -60,8 +60,7 @@ def test_token_theft_detection():
     start_st()
     session = create_new_session('userId', {}, {})
     refreshed_session = refresh_session(session['refreshToken']['token'])
-    get_session(refreshed_session['accessToken']['token'], refreshed_session['antiCsrfToken'],
-                True, refreshed_session['idRefreshToken']['token'])
+    get_session(refreshed_session['accessToken']['token'], refreshed_session['antiCsrfToken'], True)
     try:
         refresh_session(session['refreshToken']['token'])
         assert False
@@ -76,20 +75,19 @@ def test_basic_usage_of_sessions():
     session = create_new_session('userId', {}, {})
     validate(session, session_with_anti_csrf)
 
-    get_session(session['accessToken']['token'], session['antiCsrfToken'],
-                True, session['idRefreshToken']['token'])
+    get_session(session['accessToken']['token'], session['antiCsrfToken'], True)
     assert not ProcessState.get_service_called()
 
     refreshed_session_1 = refresh_session(session['refreshToken']['token'])
     validate(refreshed_session_1, session_with_anti_csrf)
 
     updated_session = get_session(refreshed_session_1['accessToken']['token'], refreshed_session_1['antiCsrfToken'],
-                                  True, refreshed_session_1['idRefreshToken']['token'])
+                                  True)
     assert ProcessState.get_service_called()
     validate(updated_session, session_verify_with_access_token)
 
     non_updated_session = get_session(updated_session['accessToken']['token'], refreshed_session_1['antiCsrfToken'],
-                                      True, refreshed_session_1['idRefreshToken']['token'])
+                                      True)
     assert not ProcessState.get_service_called()
     validate(non_updated_session, session_verify_without_access_token)
 
@@ -100,12 +98,10 @@ def test_session_verify_with_anti_csrf():
     start_st()
     session = create_new_session('userId', {}, {})
 
-    session_get_1 = get_session(session['accessToken']['token'], session['antiCsrfToken'],
-                                True, session['idRefreshToken']['token'])
+    session_get_1 = get_session(session['accessToken']['token'], session['antiCsrfToken'], True)
     validate(session_get_1, session_verify_without_access_token)
 
-    session_get_2 = get_session(session['accessToken']['token'], session['antiCsrfToken'],
-                                False, session['idRefreshToken']['token'])
+    session_get_2 = get_session(session['accessToken']['token'], session['antiCsrfToken'], False)
     validate(session_get_2, session_verify_without_access_token)
 
 
@@ -113,13 +109,11 @@ def test_session_verify_without_anti_csrf():
     start_st()
     session = create_new_session('userId', {}, {})
 
-    session_get_1 = get_session(session['accessToken']['token'], None,
-                                False, session['idRefreshToken']['token'])
+    session_get_1 = get_session(session['accessToken']['token'], None, False)
     validate(session_get_1, session_verify_without_access_token)
 
     try:
-        get_session(session['accessToken']['token'], None,
-                    True, session['idRefreshToken']['token'])
+        get_session(session['accessToken']['token'], None, True)
         assert False
     except SuperTokensTryRefreshTokenError:
         assert True
@@ -188,10 +182,8 @@ def test_anti_csrf_disabled_for_core():
     start_st()
     session = create_new_session('userId', {}, {})
 
-    session_get_1 = get_session(session['accessToken']['token'], None,
-                                False, session['idRefreshToken']['token'])
+    session_get_1 = get_session(session['accessToken']['token'], None, False)
     validate(session_get_1, session_verify_without_access_token)
 
-    session_get_2 = get_session(session['accessToken']['token'], None,
-                                True, session['idRefreshToken']['token'])
+    session_get_2 = get_session(session['accessToken']['token'], None, True)
     validate(session_get_2, session_verify_without_access_token)

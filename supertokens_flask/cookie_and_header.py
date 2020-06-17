@@ -30,8 +30,41 @@ from supertokens_flask.constants import (
     SUPERTOKENS_SDK_VERSION_HEADER_SET_KEY
 )
 from supertokens_flask.device_info import DeviceInfo
+from supertokens_flask.exceptions import raise_general_exception
 from supertokens_flask.handshake_info import HandshakeInfo
 from urllib.parse import quote, unquote
+from os import environ
+
+
+class CookieConfig:
+    __instance = None
+
+    def __init__(self, access_token_path=None, refresh_token_path=None, cookie_domain=None, cookie_secure=None,
+                 cookie_same_site=None):
+        self.access_token_path = access_token_path if isinstance(access_token_path, str) else None
+        self.refresh_token_path = refresh_token_path if isinstance(refresh_token_path, str) else None
+        self.cookie_domain = cookie_domain if isinstance(cookie_domain, str) else None
+        self.cookie_secure = cookie_secure if isinstance(cookie_secure, bool) else None
+        self.cookie_same_site = cookie_same_site if isinstance(cookie_same_site, str) else None
+
+    @staticmethod
+    def get_instance():
+        if CookieConfig.__instance is None:
+            CookieConfig.__instance = CookieConfig()
+        return CookieConfig.__instance
+
+    @staticmethod
+    def init(access_token_path, refresh_token_path, cookie_domain, cookie_secure, cookie_same_site):
+        if CookieConfig.__instance is None:
+            CookieConfig.__instance = CookieConfig(access_token_path, refresh_token_path, cookie_domain, cookie_secure, cookie_same_site)
+
+    @staticmethod
+    def reset():
+        if ('SUPERTOKENS_ENV' not in environ) or (
+                environ['SUPERTOKENS_ENV'] != 'testing'):
+            raise_general_exception(
+                'calling testing function in non testing env')
+        CookieConfig.__instance = None
 
 
 def save_frontend_info_from_request(request):
@@ -79,6 +112,18 @@ def get_cookie(request, key):
 
 def set_cookie(response, key, value, expires, path,
                domain, secure, http_only, same_site):
+    if CookieConfig.get_instance().cookie_domain is not None:
+        domain = CookieConfig.get_instance().cookie_domain
+    if CookieConfig.get_instance().cookie_secure is not None:
+        secure = CookieConfig.get_instance().cookie_secure
+    if CookieConfig.get_instance().cookie_same_site is not None:
+        same_site = CookieConfig.get_instance().cookie_same_site
+    handshake_info = HandshakeInfo.get_instance()
+    if path in {handshake_info.refresh_token_path, handshake_info.access_token_path}:
+        if path == handshake_info.access_token_path and CookieConfig.get_instance().access_token_path is not None:
+            path = CookieConfig.get_instance().access_token_path
+        elif path == handshake_info.refresh_token_path and CookieConfig.get_instance().refresh_token_path is not None:
+            path = CookieConfig.get_instance().refresh_token_path
     response.set_cookie(key=key, value=quote(value, encoding='utf-8'), expires=expires // 1000, path=path,
                         domain=domain, secure=secure, httponly=http_only, samesite=same_site)
 

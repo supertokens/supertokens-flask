@@ -23,7 +23,7 @@ from .utils import (
     reset, setup_st, clean_st, start_st, extract_all_cookies
 )
 from supertokens_flask.querier import Querier
-from supertokens_flask.constants import SESSION, HELLO, VERSION
+from supertokens_flask.constants import SESSION, HELLO, VERSION, COOKIE_DOMAIN_CONFIG
 
 
 def setup_function(f):
@@ -40,7 +40,7 @@ def teardown_function(f):
 @fixture(scope='function')
 def app():
     app = Flask(__name__)
-
+    app.config[COOKIE_DOMAIN_CONFIG] = 'supertokens.io'
     SuperTokens(app)
 
     @app.route('/login')

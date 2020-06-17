@@ -49,7 +49,7 @@ class Querier:
     def __init__(self, hosts=None):
         if hosts is None:
             hosts = DEFAULT_HOSTS
-        self.__hosts = hosts
+        self.__hosts = [host[:-1] if host[-1] == '/' else host for host in hosts.split(';')]
         self.__api_version = None
         self.__last_tried_index = 0
         self.__hosts_alive_for_testing = set()
@@ -173,14 +173,12 @@ class Querier:
             current_host = self.__hosts[self.__last_tried_index]
             self.__last_tried_index += 1
             self.__last_tried_index %= len(self.__hosts)
-            url = 'http://' + current_host['hostname'] + \
-                ':' + str(current_host['port']) + path
+            url = current_host + path
             response = http_function(url)
 
             if ('SUPERTOKENS_ENV' in environ) and (
                     environ['SUPERTOKENS_ENV'] == 'testing'):
-                self.__hosts_alive_for_testing.add(
-                    current_host['hostname'] + ':' + str(current_host['port']))
+                self.__hosts_alive_for_testing.add(current_host)
 
             if is_4xx_error(response.status_code) or is_5xx_error(response.status_code):
                 raise_general_exception('SuperTokens core threw an error for a ' + method + ' request to path: ' +

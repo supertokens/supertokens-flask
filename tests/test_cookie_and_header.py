@@ -20,8 +20,7 @@ from supertokens_flask.cookie_and_header import (
 from flask import request, Flask, jsonify
 from supertokens_flask.utils import get_timestamp_ms
 from pytest import fixture
-from .utils import get_cookie_from_response, get_unix_timestamp
-
+from .utils import get_cookie_from_response, get_unix_timestamp, reset, clean_st, setup_st, start_st
 
 """ @fixtures
 scope: function
@@ -30,6 +29,17 @@ Run once per test function
 scope: class
 Run once per test class, regardless of how many test methods are in the
 """
+
+
+def setup_function(f):
+    reset()
+    clean_st()
+    setup_st()
+
+
+def teardown_function(f):
+    reset()
+    clean_st()
 
 
 @fixture(scope='function')
@@ -63,6 +73,7 @@ def app():
 
 
 def test_set_cookie(app):
+    start_st()
     expiry = get_timestamp_ms()
     response = app.test_client().get('/?expiry=' + str(expiry))
     test_cookie = get_cookie_from_response(response, 'test')

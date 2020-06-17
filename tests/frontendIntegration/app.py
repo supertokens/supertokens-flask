@@ -27,7 +27,7 @@ from supertokens_flask import (
 from json import dumps
 
 app = Flask(__name__, static_url_path='')
-app.config['SUPERTOKENS_HOSTS'] = [{'hostname': '127.0.0.1', 'port': 9000}]
+app.config['SUPERTOKENS_HOSTS'] = 'http://127.0.0.1:9000'
 supertokens = SuperTokens(app)
 
 
@@ -229,7 +229,7 @@ def check_device_info():
         return send_options_api_response()
     sdk_name = request.headers.get('supertokens-sdk-name')
     sdk_version = request.headers.get('supertokens-sdk-version')
-    return 'true' if sdk_name == 'website' and type(sdk_version) == str else 'false'
+    return 'true' if sdk_name == 'website' and isinstance(sdk_version, str) else 'false'
 
 
 @app.route('/checkAllowCredentials', methods=['GET', 'OPTIONS'])

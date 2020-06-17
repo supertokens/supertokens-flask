@@ -88,16 +88,7 @@ def test_three_cores_and_round_robin():
     start_st()
     start_st('localhost', 3568)
     start_st('localhost', 3569)
-    Querier.init_instance([{
-        'hostname': 'localhost',
-        'port': 3567
-    }, {
-        'hostname': 'localhost',
-        'port': 3568
-    }, {
-        'hostname': 'localhost',
-        'port': 3569
-    }])
+    Querier.init_instance('http://localhost:3567;http://localhost:3568/;http://localhost:3569')
     querier = Querier.get_instance()
     assert querier.send_get_request(HELLO, []) == 'Hello\n'
     assert querier.send_get_request(HELLO, []) == 'Hello\n'
@@ -105,30 +96,21 @@ def test_three_cores_and_round_robin():
     assert len(querier.get_hosts_alive_for_testing()) == 3
     assert querier.send_delete_request(HELLO, []) == 'Hello\n'
     assert len(querier.get_hosts_alive_for_testing()) == 3
-    assert 'localhost:3567' in querier.get_hosts_alive_for_testing()
-    assert 'localhost:3568' in querier.get_hosts_alive_for_testing()
-    assert 'localhost:3569' in querier.get_hosts_alive_for_testing()
+    assert 'http://localhost:3567' in querier.get_hosts_alive_for_testing()
+    assert 'http://localhost:3568' in querier.get_hosts_alive_for_testing()
+    assert 'http://localhost:3569' in querier.get_hosts_alive_for_testing()
 
 
 def test_three_cores_one_dead_and_round_robin():
     start_st()
     start_st('localhost', 3568)
-    Querier.init_instance([{
-        'hostname': 'localhost',
-        'port': 3567
-    }, {
-        'hostname': 'localhost',
-        'port': 3568
-    }, {
-        'hostname': 'localhost',
-        'port': 3569
-    }])
+    Querier.init_instance('http://localhost:3567;http://localhost:3568/;http://localhost:3569')
     querier = Querier.get_instance()
     assert querier.send_get_request(HELLO, []) == 'Hello\n'
     assert querier.send_get_request(HELLO, []) == 'Hello\n'
     assert len(querier.get_hosts_alive_for_testing()) == 2
     assert querier.send_delete_request(HELLO, []) == 'Hello\n'
     assert len(querier.get_hosts_alive_for_testing()) == 2
-    assert 'localhost:3567' in querier.get_hosts_alive_for_testing()
-    assert 'localhost:3568' in querier.get_hosts_alive_for_testing()
-    assert 'localhost:3569' not in querier.get_hosts_alive_for_testing()
+    assert 'http://localhost:3567' in querier.get_hosts_alive_for_testing()
+    assert 'http://localhost:3568' in querier.get_hosts_alive_for_testing()
+    assert 'http://localhost:3569' not in querier.get_hosts_alive_for_testing()

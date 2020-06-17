@@ -25,6 +25,7 @@ from supertokens_flask.cookie_and_header import (
     attach_refresh_token_to_cookie
 )
 from supertokens_flask.handshake_info import HandshakeInfo
+from supertokens_flask.cookie_and_header import CookieConfig
 
 
 def __manage_cookies_post_response(session, response):
@@ -81,7 +82,10 @@ def supertokens_middleware(anti_csrf_check=None):
                 do_anti_csrf_check = anti_csrf_check
 
             refresh_path = HandshakeInfo.get_instance().refresh_token_path
-            if request.path in (refresh_path, refresh_path + '/', '/' + refresh_path + '/' + refresh_path + '/') and request.method == 'POST':
+            if CookieConfig.get_instance().refresh_token_path is not None:
+                refresh_path = CookieConfig.get_instance().refresh_token_path
+            if request.path in (refresh_path, refresh_path + '/', '/' + refresh_path + '/' + refresh_path + '/') and \
+                    request.method == 'POST':
                 session = refresh_session(None)
                 g.supertokens = session
                 response = make_response(f(*args, **kwargs))

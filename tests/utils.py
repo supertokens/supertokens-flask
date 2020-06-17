@@ -21,6 +21,8 @@ from yaml import dump, load, FullLoader
 from shutil import copy, rmtree
 from datetime import datetime, timezone
 from subprocess import run, DEVNULL
+
+from supertokens_flask.cookie_and_header import CookieConfig
 from supertokens_flask.querier import Querier
 from supertokens_flask.device_info import DeviceInfo
 from supertokens_flask.handshake_info import HandshakeInfo
@@ -60,6 +62,11 @@ TEST_COOKIE_SAME_SITE_VALUE = 'Lax'
 TEST_COOKIE_SAME_SITE_CONFIG_KEY = 'cookie_same_site'
 TEST_COOKIE_SECURE_VALUE = True
 TEST_COOKIE_SECURE_CONFIG_KEY = 'cookie_secure'
+TEST_DRIVER_CONFIG_COOKIE_DOMAIN = 'custom-driver-config.org'
+TEST_DRIVER_CONFIG_COOKIE_SECURE = True
+TEST_DRIVER_CONFIG_COOKIE_SAME_SITE = 'Lax'
+TEST_DRIVER_CONFIG_ACCESS_TOKEN_PATH = '/custom'
+TEST_DRIVER_CONFIG_REFRESH_TOKEN_PATH = '/custom/refresh'
 ACCESS_CONTROL_EXPOSE_HEADER = 'Access-Control-Expose-Headers'
 ACCESS_CONTROL_EXPOSE_HEADER_ANTI_CSRF_ENABLE = 'id-refresh-token, anti-csrf'
 ACCESS_CONTROL_EXPOSE_HEADER_ANTI_CSRF_DISABLE = 'id-refresh-token'
@@ -144,6 +151,7 @@ def reset():
     HandshakeInfo.reset()
     DeviceInfo.reset()
     Querier.reset()
+    CookieConfig.reset()
 
 
 def get_cookie_from_response(response, cookie_name):

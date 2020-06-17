@@ -70,9 +70,7 @@ def create_new_session(user_id, jwt_payload=None, session_data=None):
 
 
 def get_session(access_token, anti_csrf_token,
-                do_anti_csrf_check, id_refresh_token):
-    if id_refresh_token is None:
-        raise_unauthorised_exception('id_refresh_token missing')
+                do_anti_csrf_check):
     handshake_info = HandshakeInfo.get_instance()
 
     try:
