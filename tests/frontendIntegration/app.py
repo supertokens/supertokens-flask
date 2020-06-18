@@ -15,6 +15,8 @@ under the License.
 """
 
 from json import dumps
+import sys
+sys.path.append('../..')  # noqa: E402
 from supertokens_flask import (
     handshake_info,
     supertokens_middleware,
@@ -25,8 +27,6 @@ from supertokens_flask import (
 from flask import (
     Flask, request, g, jsonify, make_response, render_template
 )
-import sys
-sys.path.append('../..')
 
 app = Flask(__name__, static_url_path='')
 app.config['SUPERTOKENS_HOSTS'] = 'http://127.0.0.1:9000'
