@@ -14,9 +14,7 @@ License for the specific language governing permissions and limitations
 under the License.
 """
 
-from flask import (
-    Flask, request, g, jsonify, make_response, render_template
-)
+from json import dumps
 from supertokens_flask import (
     handshake_info,
     supertokens_middleware,
@@ -24,7 +22,11 @@ from supertokens_flask import (
     SuperTokens, create_new_session,
     set_relevant_headers_for_options_api
 )
-from json import dumps
+from flask import (
+    Flask, request, g, jsonify, make_response, render_template
+)
+import sys
+sys.path.append('../..')
 
 app = Flask(__name__, static_url_path='')
 app.config['SUPERTOKENS_HOSTS'] = 'http://127.0.0.1:9000'
