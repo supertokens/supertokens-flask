@@ -97,13 +97,13 @@ def get_session(response, enable_csrf_protection):
     save_frontend_info_from_request(request)
     id_refresh_token = get_id_refresh_token_from_cookie(request)
     if id_refresh_token is None:
+        clear_cookies(response)
         raise_unauthorised_exception('id refresh token is missing in cookies')
     access_token = get_access_token_from_cookie(request)
     if access_token is None:
         raise_try_refresh_token_exception('access token missing in cookies')
     try:
         anti_csrf_token = get_anti_csrf_header(request)
-        id_refresh_token = get_id_refresh_token_from_cookie(request)
         new_session = session_helper.get_session(access_token, anti_csrf_token, enable_csrf_protection)
         if 'accessToken' in new_session:
             access_token = new_session['accessToken']['token']
