@@ -23,6 +23,7 @@ from supertokens_flask.constants import (
     SESSION_VERIFY,
     SESSION_REFRESH,
     API_VERSION_HEADER,
+    API_KEY_HEADER,
     SUPPORTED_CDI_VERSIONS
 )
 from supertokens_flask.utils import (
@@ -46,13 +47,14 @@ class Querier:
     __instance = None
     __lock = Lock()
 
-    def __init__(self, hosts=None):
+    def __init__(self, hosts=None, api_key=None):
         if hosts is None:
             hosts = DEFAULT_HOSTS
         self.__hosts = [host[:-1] if host[-1] == '/' else host for host in hosts.split(';')]
         self.__api_version = None
         self.__last_tried_index = 0
         self.__hosts_alive_for_testing = set()
+        self.__api_key = api_key
 
     @staticmethod
     def reset():
@@ -78,7 +80,9 @@ class Querier:
                 return self.__api_version
 
             def f(url):
-                return requests.get(url)
+                return requests.get(url, headers={
+                    API_KEY_HEADER: self.__api_key
+                })
 
             response = self.__send_request_helper(
                 API_VERSION, 'GET', f, len(self.__hosts))
@@ -104,9 +108,9 @@ class Querier:
         return Querier.__instance
 
     @staticmethod
-    def init_instance(hosts):
+    def init_instance(hosts, api_key):
         if Querier.__instance is None:
-            Querier.__instance = Querier(hosts)
+            Querier.__instance = Querier(hosts, api_key)
 
     def send_get_request(self, path, params=None):
         if params is None:
@@ -114,7 +118,8 @@ class Querier:
 
         def f(url):
             return requests.get(url, params=params, headers={
-                API_VERSION_HEADER: self.get_api_version()
+                API_VERSION_HEADER: self.get_api_version(),
+                API_KEY_HEADER: self.__api_key
             })
 
         return self.__send_request_helper(path, 'GET', f, len(self.__hosts))
@@ -138,7 +143,8 @@ class Querier:
 
         def f(url):
             return requests.post(url, json=data, headers={
-                API_VERSION_HEADER: self.get_api_version()
+                API_VERSION_HEADER: self.get_api_version(),
+                API_KEY_HEADER: self.__api_key
             })
 
         return self.__send_request_helper(path, 'POST', f, len(self.__hosts))
@@ -149,7 +155,8 @@ class Querier:
 
         def f(url):
             return requests.delete(url, json=data, headers={
-                API_VERSION_HEADER: self.get_api_version()
+                API_VERSION_HEADER: self.get_api_version(),
+                API_KEY_HEADER: self.__api_key
             })
 
         return self.__send_request_helper(path, 'DELETE', f, len(self.__hosts))
@@ -160,7 +167,8 @@ class Querier:
 
         def f(url):
             return requests.put(url, json=data, headers={
-                API_VERSION_HEADER: self.get_api_version()
+                API_VERSION_HEADER: self.get_api_version(),
+                API_KEY_HEADER: self.__api_key
             })
 
         return self.__send_request_helper(path, 'PUT', f, len(self.__hosts))

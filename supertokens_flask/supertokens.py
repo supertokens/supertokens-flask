@@ -16,6 +16,7 @@ under the License.
 
 from supertokens_flask.constants import (
     HOSTS_CONFIG,
+    API_CONFIG,
     ACCESS_TOKEN_PATH_CONFIG,
     REFRESH_TOKEN_PATH_CONFIG,
     COOKIE_DOMAIN_CONFIG,
@@ -229,13 +230,14 @@ class SuperTokens:
         self.__try_refresh_token_callback = default_try_refresh_token_callback
         self.__token_theft_detected_callback = default_token_theft_detected_callback
         hosts = app.config.setdefault(HOSTS_CONFIG, None)
+        api_key = app.config.setdefault(API_CONFIG, None)
         access_token_path = app.config.setdefault(ACCESS_TOKEN_PATH_CONFIG, None)
         refresh_token_path = app.config.setdefault(REFRESH_TOKEN_PATH_CONFIG, None)
         cookie_domain = app.config.setdefault(COOKIE_DOMAIN_CONFIG, None)
         cookie_secure = app.config.setdefault(COOKIE_SECURE_CONFIG, None)
         cookie_same_site = app.config.setdefault(COOKIE_SAME_SITE_CONFIG, None)
 
-        session_helper.init(hosts)
+        session_helper.init(hosts, api_key)
         CookieConfig.init(access_token_path, refresh_token_path, cookie_domain, cookie_secure, cookie_same_site)
         self.__set_error_handler_callbacks(app)
 

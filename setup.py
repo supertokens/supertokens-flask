@@ -20,7 +20,7 @@ extras_require = {
 
 setup(
     name="supertokens_flask",
-    version="1.1.1",
+    version="1.2.0",
     author="SuperTokens",
     license="Apache 2.0",
     author_email="team@supertokens.io",
@@ -28,7 +28,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/supertokens/supertokens-flask",
-    packages=find_packages(exclude=["tests",]),
+    packages=find_packages(exclude=["tests", ]),
     classifiers=[
         "Framework :: Flask",
         "Programming Language :: Python :: 3",

@@ -88,7 +88,7 @@ def test_three_cores_and_round_robin():
     start_st()
     start_st('localhost', 3568)
     start_st('localhost', 3569)
-    Querier.init_instance('http://localhost:3567;http://localhost:3568/;http://localhost:3569')
+    Querier.init_instance('http://localhost:3567;http://localhost:3568/;http://localhost:3569', None)
     querier = Querier.get_instance()
     assert querier.send_get_request(HELLO, []) == 'Hello\n'
     assert querier.send_get_request(HELLO, []) == 'Hello\n'
@@ -104,7 +104,7 @@ def test_three_cores_and_round_robin():
 def test_three_cores_one_dead_and_round_robin():
     start_st()
     start_st('localhost', 3568)
-    Querier.init_instance('http://localhost:3567;http://localhost:3568/;http://localhost:3569')
+    Querier.init_instance('http://localhost:3567;http://localhost:3568/;http://localhost:3569', None)
     querier = Querier.get_instance()
     assert querier.send_get_request(HELLO, []) == 'Hello\n'
     assert querier.send_get_request(HELLO, []) == 'Hello\n'

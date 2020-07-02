@@ -14,10 +14,12 @@ License for the specific language governing permissions and limitations
 under the License.
 """
 
+from os import environ
 from .utils import (
     reset, setup_st, clean_st, start_st, set_key_value_in_config,
     TEST_ENABLE_ANTI_CSRF_CONFIG_KEY
 )
+from supertokens_flask.querier import Querier
 from supertokens_flask.session_helper import (
     get_all_session_handles_for_user,
     revoke_all_sessions_for_user,
@@ -35,7 +37,8 @@ from supertokens_flask.session_helper import (
 from supertokens_flask.exceptions import (
     SuperTokensTokenTheftError,
     SuperTokensUnauthorisedError,
-    SuperTokensTryRefreshTokenError
+    SuperTokensTryRefreshTokenError,
+    SuperTokensGeneralError
 )
 from jsonschema import validate
 from .schema import (
@@ -68,6 +71,33 @@ def test_token_theft_detection():
         assert e.user_id == 'userId'
         assert e.session_handle == session['session']['handle']
         assert True
+
+
+def test_token_theft_detection_with_api_key():
+    set_key_value_in_config("api_keys", "asckjsbdalvkjbasdlvjbalskdjvbaldkj")
+    start_st()
+    Querier.init_instance(None, "asckjsbdalvkjbasdlvjbalskdjvbaldkj")
+    session = create_new_session('userId', {}, {})
+    refreshed_session = refresh_session(session['refreshToken']['token'])
+    get_session(refreshed_session['accessToken']['token'], refreshed_session['antiCsrfToken'], True)
+    try:
+        refresh_session(session['refreshToken']['token'])
+        assert False
+    except SuperTokensTokenTheftError as e:
+        assert e.user_id == 'userId'
+        assert e.session_handle == session['session']['handle']
+        assert True
+
+
+def test_query_without_api_key():
+    set_key_value_in_config("api_keys", "asckjsbdalvkjbasdlvjbalskdjvbaldkj")
+    start_st()
+    try:
+        version = Querier.get_instance().get_api_version()
+        if version != "2.0" and "com-" in environ['SUPERTOKENS_PATH']:
+            assert False
+    except SuperTokensGeneralError as e:
+        assert "Invalid API key" in str(e)
 
 
 def test_basic_usage_of_sessions():

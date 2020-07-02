@@ -38,8 +38,8 @@ from supertokens_flask.process_state import ProcessState
 from os import environ
 
 
-def init(hosts):
-    Querier.init_instance(hosts)
+def init(hosts, api_key):
+    Querier.init_instance(hosts, api_key)
 
 
 def reset():
