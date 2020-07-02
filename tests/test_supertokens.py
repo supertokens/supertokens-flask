@@ -277,8 +277,11 @@ def test_cookie_and_header_values_with_driver_config_and_csrf_enabled(driver_con
             TEST_ACCESS_TOKEN_MAX_AGE_VALUE,
             TEST_ACCESS_TOKEN_MAX_AGE_VALUE - 1
     }
-    assert get_unix_timestamp(cookies_1['sRefreshToken']['expires']) - int(time()) == \
-        TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60
+    assert get_unix_timestamp(
+        cookies_1['sRefreshToken']['expires']) - int(time()) in {
+            TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60,
+            (TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60) - 1
+    }
     assert cookies_1['sIdRefreshToken']['value'] + \
         ';' == response_1.headers['Id-Refresh-Token'][:-13]
     assert int(response_1.headers['Id-Refresh-Token'][-13:-3]) == \
@@ -434,8 +437,11 @@ def test_cookie_and_header_values_with_driver_config_and_csrf_disabled(driver_co
             TEST_ACCESS_TOKEN_MAX_AGE_VALUE,
             TEST_ACCESS_TOKEN_MAX_AGE_VALUE - 1
     }
-    assert get_unix_timestamp(cookies_1['sRefreshToken']['expires']) - int(time()) == \
-        TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60
+    assert get_unix_timestamp(
+        cookies_1['sRefreshToken']['expires']) - int(time()) in {
+            TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60,
+            (TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60) - 1
+    }
     assert cookies_1['sIdRefreshToken']['value'] + \
         ';' == response_1.headers['Id-Refresh-Token'][:-13]
     assert int(response_1.headers['Id-Refresh-Token'][-13:-3]) == \
@@ -584,8 +590,11 @@ def test_cookie_and_header_values_with_csrf_enabled(core_config_app):
             TEST_ACCESS_TOKEN_MAX_AGE_VALUE,
             TEST_ACCESS_TOKEN_MAX_AGE_VALUE - 1
     }
-    assert get_unix_timestamp(cookies_1['sRefreshToken']['expires']) - int(time()) == \
-        TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60
+    assert get_unix_timestamp(
+        cookies_1['sRefreshToken']['expires']) - int(time()) in {
+            TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60,
+            (TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60) - 1
+    }
     assert cookies_1['sIdRefreshToken']['value'] + \
         ';' == response_1.headers['Id-Refresh-Token'][:-13]
     assert int(response_1.headers['Id-Refresh-Token'][-13:-3]) == \
