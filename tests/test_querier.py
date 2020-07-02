@@ -19,7 +19,6 @@ from supertokens_flask.utils import find_max_version
 from supertokens_flask.exceptions import SuperTokensGeneralError
 from .utils import (
     reset, setup_st, clean_st, start_st,
-    API_VERSION_TEST_BASIC_RESULT,
     API_VERSION_TEST_NON_SUPPORTED_SV,
     API_VERSION_TEST_NON_SUPPORTED_CV,
     API_VERSION_TEST_SINGLE_SUPPORTED_SV,
@@ -55,7 +54,6 @@ def test_get_api_version():
     except SuperTokensGeneralError:
         assert True
     start_st()
-    assert Querier.get_instance().get_api_version() == API_VERSION_TEST_BASIC_RESULT
     cv = API_VERSION_TEST_SINGLE_SUPPORTED_CV
     sv = API_VERSION_TEST_SINGLE_SUPPORTED_SV
     assert find_max_version(cv, sv) == API_VERSION_TEST_SINGLE_SUPPORTED_RESULT
