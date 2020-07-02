@@ -315,9 +315,16 @@ def test_cookie_and_header_values_with_driver_config_and_csrf_enabled(driver_con
     assert cookies_2['sRefreshToken']['secure']
     assert cookies_2['sIdRefreshToken']['secure']
     assert get_unix_timestamp(
-        cookies_2['sAccessToken']['expires']) - int(time()) == TEST_ACCESS_TOKEN_MAX_AGE_VALUE
-    assert get_unix_timestamp(cookies_2['sRefreshToken']['expires']) - int(time()) == \
-        TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60
+        cookies_2['sAccessToken']['expires']) - int(time()) in {
+            TEST_ACCESS_TOKEN_MAX_AGE_VALUE,
+            TEST_ACCESS_TOKEN_MAX_AGE_VALUE - 1
+    }
+
+    assert get_unix_timestamp(
+        cookies_2['sRefreshToken']['expires']) - int(time()) in {
+            TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60,
+            (TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60) - 1
+    }
     assert cookies_2['sIdRefreshToken']['value'] + \
         ';' == response_2.headers['Id-Refresh-Token'][:-13]
     assert int(response_2.headers['Id-Refresh-Token'][-13:-3]) == \
@@ -475,9 +482,15 @@ def test_cookie_and_header_values_with_driver_config_and_csrf_disabled(driver_co
     assert cookies_2['sRefreshToken']['secure']
     assert cookies_2['sIdRefreshToken']['secure']
     assert get_unix_timestamp(
-        cookies_2['sAccessToken']['expires']) - int(time()) == TEST_ACCESS_TOKEN_MAX_AGE_VALUE
-    assert get_unix_timestamp(cookies_2['sRefreshToken']['expires']) - int(time()) == \
-        TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60
+        cookies_2['sAccessToken']['expires']) - int(time()) in {
+            TEST_ACCESS_TOKEN_MAX_AGE_VALUE,
+            TEST_ACCESS_TOKEN_MAX_AGE_VALUE - 1
+    }
+    assert get_unix_timestamp(
+        cookies_2['sRefreshToken']['expires']) - int(time()) in {
+            TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60,
+            (TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60) - 1
+    }
     assert cookies_2['sIdRefreshToken']['value'] + \
         ';' == response_2.headers['Id-Refresh-Token'][:-13]
     assert int(response_2.headers['Id-Refresh-Token'][-13:-3]) == \
@@ -628,9 +641,15 @@ def test_cookie_and_header_values_with_csrf_enabled(core_config_app):
     assert cookies_2['sRefreshToken']['secure']
     assert cookies_2['sIdRefreshToken']['secure']
     assert get_unix_timestamp(
-        cookies_2['sAccessToken']['expires']) - int(time()) == TEST_ACCESS_TOKEN_MAX_AGE_VALUE
-    assert get_unix_timestamp(cookies_2['sRefreshToken']['expires']) - int(time()) == \
-        TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60
+        cookies_2['sAccessToken']['expires']) - int(time()) in {
+            TEST_ACCESS_TOKEN_MAX_AGE_VALUE,
+            TEST_ACCESS_TOKEN_MAX_AGE_VALUE - 1
+    }
+    assert get_unix_timestamp(
+        cookies_2['sRefreshToken']['expires']) - int(time()) in {
+            TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60,
+            (TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60) - 1
+    }
     assert cookies_2['sIdRefreshToken']['value'] + \
         ';' == response_2.headers['Id-Refresh-Token'][:-13]
     assert int(response_2.headers['Id-Refresh-Token'][-13:-3]) == \
@@ -792,8 +811,11 @@ def test_cookie_and_header_values_with_csrf_disabled(core_config_app):
             TEST_ACCESS_TOKEN_MAX_AGE_VALUE,
             TEST_ACCESS_TOKEN_MAX_AGE_VALUE - 1
     }
-    assert get_unix_timestamp(cookies_2['sRefreshToken']['expires']) - int(time()) == \
-        TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60
+    assert get_unix_timestamp(
+        cookies_2['sRefreshToken']['expires']) - int(time()) in {
+            TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60,
+            (TEST_REFRESH_TOKEN_MAX_AGE_VALUE * 60) - 1
+    }
     assert cookies_2['sIdRefreshToken']['value'] + \
         ';' == response_2.headers['Id-Refresh-Token'][:-13]
     assert int(response_2.headers['Id-Refresh-Token'][-13:-3]) == \
