@@ -34,13 +34,13 @@ supertokens = SuperTokens(app)
 
 
 def try_refresh_token(e):
-    response = make_response(jsonify({'error': 'try refresh token'}), 440)
+    response = make_response(jsonify({'error': 'try refresh token'}), 401)
     attach_credentials_headers(response)
     return response
 
 
 def unauthorised(e):
-    response = make_response(jsonify({'error': 'unauthorised'}), 440)
+    response = make_response(jsonify({'error': 'unauthorised'}), 401)
     attach_credentials_headers(response)
     return response
 
