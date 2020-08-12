@@ -56,7 +56,7 @@ def test_successful_handshake_and_update_jwt():
     assert info.cookie_domain in {'supertokens.io', 'localhost'}
     assert isinstance(info.jwt_signing_public_key, str)
     assert isinstance(info.cookie_secure, bool) and not info.cookie_secure
-    assert info.refresh_token_path == '/refresh' or info.refresh_token_path == '/session/refresh'
+    assert info.refresh_token_path == '/refresh'
     assert isinstance(info.enable_anti_csrf, bool) and info.enable_anti_csrf
     assert isinstance(info.access_token_blacklisting_enabled,
                       bool) and not info.access_token_blacklisting_enabled
