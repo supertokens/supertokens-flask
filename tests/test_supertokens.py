@@ -55,6 +55,15 @@ from supertokens_flask.supertokens import (
     get_session,
     SuperTokens
 )
+
+from supertokens_flask.querier import (
+    Querier
+)
+
+from supertokens_flask.utils import (
+    compare_version
+)
+
 from supertokens_flask.session_helper import ProcessState
 from time import time
 from pytest import fixture
@@ -881,6 +890,28 @@ def test_cookie_and_header_values_with_csrf_disabled(core_config_app):
     assert get_unix_timestamp(cookies_4['sRefreshToken']['expires']) == 0
     assert get_unix_timestamp(cookies_4['sIdRefreshToken']['expires']) == 0
     assert response_4.headers['Id-Refresh-Token'] == 'remove'
+
+
+def test_cookie_domain(core_config_app):
+    start_st()
+    if compare_version(Querier.get_instance().get_api_version(), "2.1") == "2.1":
+        return
+    response_1 = core_config_app.test_client().get('/login')
+    cookies_1 = extract_all_cookies(response_1)
+    assert 'domain' not in cookies_1['sAccessToken']
+    assert 'domain' not in cookies_1['sRefreshToken']
+    assert 'domain' not in cookies_1['sIdRefreshToken']
+
+
+def test_cookie_domain_below_2_2(app):
+    start_st()
+    if compare_version(Querier.get_instance().get_api_version(), "2.1") != "2.1":
+        return
+    response_1 = app.test_client().get('/login')
+    cookies_1 = extract_all_cookies(response_1)
+    assert cookies_1['sAccessToken']['domain'] == 'supertokens.io'
+    assert cookies_1['sRefreshToken']['domain'] == 'supertokens.io'
+    assert cookies_1['sIdRefreshToken']['domain'] == 'supertokens.io'
 
 
 def test_supertokens_token_theft_detection(app):

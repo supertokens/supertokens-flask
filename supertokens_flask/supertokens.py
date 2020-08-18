@@ -64,7 +64,7 @@ def create_new_session(response, user_id, jwt_payload=None, session_data=None):
         response,
         access_token['token'],
         access_token['expiry'],
-        access_token['domain'],
+        access_token['domain'] if 'domain' in access_token else None,
         access_token['cookiePath'],
         access_token['cookieSecure'],
         access_token['sameSite']
@@ -73,7 +73,7 @@ def create_new_session(response, user_id, jwt_payload=None, session_data=None):
         response,
         refresh_token['token'],
         refresh_token['expiry'],
-        refresh_token['domain'],
+        refresh_token['domain'] if 'domain' in refresh_token else None,
         refresh_token['cookiePath'],
         refresh_token['cookieSecure'],
         refresh_token['sameSite']
@@ -82,7 +82,7 @@ def create_new_session(response, user_id, jwt_payload=None, session_data=None):
         response,
         id_refresh_token['token'],
         id_refresh_token['expiry'],
-        id_refresh_token['domain'],
+        id_refresh_token['domain'] if 'domain' in id_refresh_token else None,
         id_refresh_token['cookiePath'],
         id_refresh_token['cookieSecure'],
         id_refresh_token['sameSite']
@@ -119,7 +119,7 @@ def get_session(response, enable_csrf_protection):
                     response,
                     access_token_info['token'],
                     access_token_info['expiry'],
-                    access_token_info['domain'],
+                    access_token_info['domain'] if 'domain' in access_token_info else None,
                     access_token_info['cookiePath'],
                     access_token_info['cookieSecure'],
                     access_token_info['sameSite']
@@ -151,7 +151,7 @@ def refresh_session(response):
                 response,
                 access_token['token'],
                 access_token['expiry'],
-                access_token['domain'],
+                access_token['domain'] if 'domain' in access_token else None,
                 access_token['cookiePath'],
                 access_token['cookieSecure'],
                 access_token['sameSite']
@@ -160,7 +160,7 @@ def refresh_session(response):
                 response,
                 refresh_token['token'],
                 refresh_token['expiry'],
-                refresh_token['domain'],
+                refresh_token['domain'] if 'domain' in refresh_token else None,
                 refresh_token['cookiePath'],
                 refresh_token['cookieSecure'],
                 refresh_token['sameSite']
@@ -169,7 +169,7 @@ def refresh_session(response):
                 response,
                 id_refresh_token['token'],
                 id_refresh_token['expiry'],
-                id_refresh_token['domain'],
+                id_refresh_token['domain'] if 'domain' in id_refresh_token else None,
                 id_refresh_token['cookiePath'],
                 id_refresh_token['cookieSecure'],
                 id_refresh_token['sameSite']
