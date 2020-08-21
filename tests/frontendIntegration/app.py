@@ -15,6 +15,7 @@ under the License.
 """
 
 from json import dumps
+from os import environ
 import sys
 sys.path.append('../..')  # noqa: E402
 from supertokens_flask import (
@@ -30,6 +31,7 @@ from flask import (
 
 app = Flask(__name__, static_url_path='')
 app.config['SUPERTOKENS_HOSTS'] = 'http://127.0.0.1:9000'
+app.config['SUPERTOKENS_COOKIE_SAME_SITE'] = 'lax'
 supertokens = SuperTokens(app)
 
 
@@ -83,14 +85,14 @@ def send_file():
 
 def send_options_api_response():
     response = make_response('', 200)
-    response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:8080'
+    response.headers['Access-Control-Allow-Origin'] = 'http://localhost.org:8080'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     set_relevant_headers_for_options_api(response)
     return response
 
 
 def attach_credentials_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:8080'
+    response.headers['Access-Control-Allow-Origin'] = 'http://localhost.org:8080'
     response.headers['Access-Control-Allow-Credentials'] = 'true'
 
 
@@ -197,7 +199,7 @@ def get_refresh_called_info():
     if request.method == 'OPTIONS':
         return send_options_api_response()
     response = make_response(dumps(Test.get_refresh_called_count()), 200)
-    response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:8080'
+    response.headers['Access-Control-Allow-Origin'] = 'http://localhost.org:8080'
     return response
 
 
@@ -206,7 +208,7 @@ def get_session_called_info():
     if request.method == 'OPTIONS':
         return send_options_api_response()
     response = make_response(dumps(Test.get_session_called_count()), 200)
-    response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:8080'
+    response.headers['Access-Control-Allow-Origin'] = 'http://localhost.org:8080'
     return response
 
 
@@ -254,4 +256,7 @@ def f_405(e):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    port = 8080
+    if 'PORT' in environ:
+        port = environ['PORT']
+    app.run(host='0.0.0.0', port=port, debug=True)

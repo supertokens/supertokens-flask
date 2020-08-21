@@ -77,6 +77,8 @@ git checkout $2
 cd ../project/test/frontendIntegration/
 SUPERTOKENS_ENV=testing python3 app.py &
 pid=$!
+SUPERTOKENS_ENV=testing PORT=8082 python3 app.py &
+pid2=$!
 cd ../../../supertokens-website/test/server
 npm i -d
 npm i git+https://github.com:supertokens/supertokens-node.git#$3
@@ -91,3 +93,4 @@ fi
 rm -rf ./test/server/node_modules/supertokens-node
 git checkout HEAD -- ./test/server/package.json
 kill -15 $pid
+kill -15 $pid2
