@@ -23,13 +23,18 @@ from supertokens_flask import (
     supertokens_middleware,
     revoke_all_sessions_for_user,
     SuperTokens, create_new_session,
-    set_relevant_headers_for_options_api
+    get_cors_allowed_headers
 )
+from flask_cors import CORS
 from flask import (
     Flask, request, g, jsonify, make_response, render_template
 )
 
 app = Flask(__name__, static_url_path='')
+
+CORS(app, supports_credentials=True, origins=["http://localhost.org:8080"],
+     allow_headers=["Content-Type"] + get_cors_allowed_headers())
+
 app.config['SUPERTOKENS_HOSTS'] = 'http://127.0.0.1:9000'
 app.config['SUPERTOKENS_COOKIE_SAME_SITE'] = 'lax'
 supertokens = SuperTokens(app)
@@ -37,13 +42,11 @@ supertokens = SuperTokens(app)
 
 def try_refresh_token(e):
     response = make_response(jsonify({'error': 'try refresh token'}), 401)
-    attach_credentials_headers(response)
     return response
 
 
 def unauthorised(e):
     response = make_response(jsonify({'error': 'unauthorised'}), 401)
-    attach_credentials_headers(response)
     return response
 
 
@@ -83,27 +86,11 @@ def send_file():
     return render_template('index.html')
 
 
-def send_options_api_response():
-    response = make_response('', 200)
-    response.headers['Access-Control-Allow-Origin'] = 'http://localhost.org:8080'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-    set_relevant_headers_for_options_api(response)
-    return response
-
-
-def attach_credentials_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = 'http://localhost.org:8080'
-    response.headers['Access-Control-Allow-Credentials'] = 'true'
-
-
-@app.route('/login', methods=['POST', 'OPTIONS'])
+@app.route('/login', methods=['POST'])
 def login():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
     user_id = request.json['userId']
     response = make_response(user_id, 200)
     create_new_session(response, user_id)
-    attach_credentials_headers(response)
     return response
 
 
@@ -118,135 +105,101 @@ def test_config():
     return '', 200
 
 
-@app.route('/multipleInterceptors', methods=['POST', 'OPTIONS'])
+@app.route('/multipleInterceptors', methods=['POST'])
 def multiple_interceptors():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
     result_bool = 'success' if 'interceptorheader2' in request.headers and 'interceptorheader1' in request.headers else 'failure'
     return result_bool, 200
 
 
-@app.route('/', methods=['GET', 'OPTIONS'])
+@app.route('/', methods=['GET'])
 @supertokens_middleware(True)
 def get_info():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
     Test.increment_get_session()
     response = make_response(g.supertokens.get_user_id(), 200)
-    attach_credentials_headers(response)
     response.headers['Cache-Control'] = 'no-cache, private'
     return response
 
 
-@app.route('/update-jwt', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/update-jwt', methods=['GET', 'POST'])
 @supertokens_middleware(True)
 def update_jwt():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
     Test.increment_get_session()
     if request.method == 'POST':
         g.supertokens.update_jwt_payload(request.json)
     response = make_response(jsonify(g.supertokens.get_jwt_payload()), 200)
-    attach_credentials_headers(response)
     response.headers['Cache-Control'] = 'no-cache, private'
     return response
 
 
-@app.route('/testing', methods=['GET', 'OPTIONS', 'POST', 'DELETE', 'PUT'])
+@app.route('/testing', methods=['GET', 'POST', 'DELETE', 'PUT'])
 def testing():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
     response = make_response('success', 200)
     if 'testing' in request.headers:
         response.headers['testing'] = request.headers['testing']
     return response
 
 
-@app.route('/logout', methods=['POST', 'OPTIONS'])
+@app.route('/logout', methods=['POST'])
 @supertokens_middleware
 def logout():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
     response = make_response('success', 200)
     g.supertokens.revoke_session()
-    attach_credentials_headers(response)
     return response
 
 
-@app.route('/revokeAll', methods=['POST', 'OPTIONS'])
+@app.route('/revokeAll', methods=['POST'])
 @supertokens_middleware(True)
 def revoke_all():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
     response = make_response('success', 200)
     revoke_all_sessions_for_user(g.supertokens.get_user_id())
     return response
 
 
-@app.route('/refresh', methods=['POST', 'OPTIONS'])
+@app.route('/refresh', methods=['POST'])
 @supertokens_middleware
 def refresh():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
     Test.increment_refresh()
     response = make_response('refresh success', 200)
-    attach_credentials_headers(response)
     return response
 
 
-@app.route('/refreshCalledTime', methods=['GET', 'OPTIONS'])
+@app.route('/refreshCalledTime', methods=['GET'])
 def get_refresh_called_info():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
     response = make_response(dumps(Test.get_refresh_called_count()), 200)
-    response.headers['Access-Control-Allow-Origin'] = 'http://localhost.org:8080'
     return response
 
 
-@app.route('/getSessionCalledTime', methods=['GET', 'OPTIONS'])
+@app.route('/getSessionCalledTime', methods=['GET'])
 def get_session_called_info():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
     response = make_response(dumps(Test.get_session_called_count()), 200)
-    response.headers['Access-Control-Allow-Origin'] = 'http://localhost.org:8080'
     return response
 
 
-@app.route('/ping', methods=['GET', 'OPTIONS'])
+@app.route('/ping', methods=['GET'])
 def ping():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
     return 'success', 200
 
 
-@app.route('/testHeader', methods=['GET', 'OPTIONS'])
+@app.route('/testHeader', methods=['GET'])
 def test_header():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
     success_info = request.headers.get('st-custom-header')
     return jsonify({'success': success_info})
 
 
-@app.route('/checkDeviceInfo', methods=['GET', 'OPTIONS'])
+@app.route('/checkDeviceInfo', methods=['GET'])
 def check_device_info():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
     sdk_name = request.headers.get('supertokens-sdk-name')
     sdk_version = request.headers.get('supertokens-sdk-version')
     return 'true' if sdk_name == 'website' and isinstance(sdk_version, str) else 'false'
 
 
-@app.route('/checkAllowCredentials', methods=['GET', 'OPTIONS'])
+@app.route('/checkAllowCredentials', methods=['GET'])
 def check_allow_credentials():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
     return dumps('allow-credentials' in request.headers), 200
 
 
-@app.route('/testError', methods=['GET', 'OPTIONS'])
+@app.route('/testError', methods=['GET'])
 def test_error():
-    if request.method == 'OPTIONS':
-        return send_options_api_response()
     return 'test error message', 500
 
 

@@ -15,6 +15,7 @@ extras_require = {
         'flake8',
         'autopep8',
         'pyyaml',
+        'flask-cors'
     ])
 }
 

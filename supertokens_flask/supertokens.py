@@ -45,7 +45,8 @@ from supertokens_flask.cookie_and_header import (
     attach_refresh_token_to_cookie,
     save_frontend_info_from_request,
     get_id_refresh_token_from_cookie,
-    attach_id_refresh_token_to_cookie_and_header
+    attach_id_refresh_token_to_cookie_and_header,
+    get_cors_allowed_headers as get_cors_allowed_headers_from_cookie_and_headers
 )
 from supertokens_flask.default_callbacks import (
     default_unauthorised_callback,
@@ -222,6 +223,10 @@ def update_jwt_payload(session_handle, new_jwt_payload):
 
 def set_relevant_headers_for_options_api(response):
     set_options_api_headers(response)
+
+
+def get_cors_allowed_headers():
+    return get_cors_allowed_headers_from_cookie_and_headers()
 
 
 class SuperTokens:
