@@ -74,23 +74,16 @@ cd ../
 git clone git@github.com:supertokens/supertokens-website.git
 cd supertokens-website
 git checkout $2
-cd ../project/test/frontendIntegration/
-echo "hahaha 1"
+cd ../project/tests/frontendIntegration/
 SUPERTOKENS_ENV=testing python3 app.py &
 pid=$!
-echo "hahaha 2"
 SUPERTOKENS_ENV=testing PORT=8082 python3 app.py &
 pid2=$!
 cd ../../../supertokens-website/test/server
-echo "hahaha 3"
 npm i -d
-echo "hahaha 4"
 npm i git+https://github.com:supertokens/supertokens-node.git#$3
-echo "hahaha 5"
 cd ../../
-echo "hahaha 6"
 npm i -d
-echo "hahaha 7"
 NODE_PORT=8081 INSTALL_PATH=../com-root npm test
 if [[ $? -ne 0 ]]
 then
