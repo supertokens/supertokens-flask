@@ -20,4 +20,4 @@ test:
 	pytest
 
 dev-install:
-	pip3 install flask pycryptodome pytest jsonschema autopep8 flake8 requests pyyaml
+	pip3 install flask flask-cors pycryptodome pytest jsonschema autopep8 flake8 requests pyyaml
