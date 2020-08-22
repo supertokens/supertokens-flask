@@ -77,7 +77,8 @@ git checkout $2
 cd ../project/tests/frontendIntegration/
 SUPERTOKENS_ENV=testing python3 app.py &
 pid=$!
-SUPERTOKENS_ENV=testing PORT=8082 python3 app.py &
+echo "RUNNING PROCESS!!"
+SUPERTOKENS_ENV=testing PORT=8082 python3 app.py
 pid2=$!
 cd ../../../supertokens-website/test/server
 npm i -d
