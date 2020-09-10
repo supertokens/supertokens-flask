@@ -141,7 +141,8 @@ def refresh_session(response):
         raise_unauthorised_exception('Missing auth tokens in cookies. Have you set the correct refresh API path in '
                                      'your frontend and SuperTokens config?')
     try:
-        new_session = session_helper.refresh_session(refresh_token)
+        anti_csrf_token = get_anti_csrf_header(request)
+        new_session = session_helper.refresh_session(refresh_token, anti_csrf_token)
         access_token = new_session['accessToken']
         refresh_token = new_session['refreshToken']
         id_refresh_token = new_session['idRefreshToken']

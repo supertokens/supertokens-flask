@@ -302,7 +302,8 @@ def test_cookie_and_header_values_with_driver_config_and_csrf_enabled(driver_con
         'localhost',
         'sRefreshToken',
         cookies_1['sRefreshToken']['value'])
-    response_2 = request_2.post('/custom/refresh')
+    response_2 = request_2.post('/custom/refresh', headers={
+        'anti-csrf': response_1.headers.get('anti-csrf')})
     cookies_2 = extract_all_cookies(response_2)
     assert cookies_1['sAccessToken']['value'] != cookies_2['sAccessToken']['value']
     assert cookies_1['sRefreshToken']['value'] != cookies_2['sRefreshToken']['value']
@@ -406,9 +407,6 @@ def test_cookie_and_header_values_with_driver_config_and_csrf_enabled(driver_con
 
 def test_cookie_and_header_values_with_driver_config_and_csrf_disabled(driver_config_app):
     set_key_value_in_config(TEST_ENABLE_ANTI_CSRF_CONFIG_KEY, False)
-    set_key_value_in_config(
-        TEST_COOKIE_SAME_SITE_CONFIG_KEY,
-        'None')
     set_key_value_in_config(
         TEST_ACCESS_TOKEN_MAX_AGE_CONFIG_KEY,
         TEST_ACCESS_TOKEN_MAX_AGE_VALUE)
@@ -628,7 +626,8 @@ def test_cookie_and_header_values_with_csrf_enabled(core_config_app):
         'localhost',
         'sRefreshToken',
         cookies_1['sRefreshToken']['value'])
-    response_2 = request_2.post('/refresh')
+    response_2 = request_2.post('/refresh', headers={
+        'anti-csrf': response_1.headers.get('anti-csrf')})
     cookies_2 = extract_all_cookies(response_2)
     assert cookies_1['sAccessToken']['value'] != cookies_2['sAccessToken']['value']
     assert cookies_1['sRefreshToken']['value'] != cookies_2['sRefreshToken']['value']
@@ -923,7 +922,8 @@ def test_supertokens_token_theft_detection(app):
         'localhost',
         'sRefreshToken',
         cookies_1['sRefreshToken']['value'])
-    response_2 = request_2.post('/refresh')
+    response_2 = request_2.post('/refresh', headers={
+        'anti-csrf': response_1.headers.get('anti-csrf')})
     cookies_2 = extract_all_cookies(response_2)
     request_3 = app.test_client()
     request_3.set_cookie(
@@ -943,7 +943,8 @@ def test_supertokens_token_theft_detection(app):
         'localhost',
         'sRefreshToken',
         cookies_1['sRefreshToken']['value'])
-    response_4 = request_4.post('/refresh')
+    response_4 = request_4.post('/refresh', headers={
+        'anti-csrf': response_1.headers.get('anti-csrf')})
     assert response_4.json == {'error': 'token theft detected'}
     assert response_4.status_code == 440 or response_4.status_code == 401
 
@@ -973,7 +974,8 @@ def test_supertokens_basic_usage_of_sessions(app):
         'localhost',
         'sRefreshToken',
         cookies_1['sRefreshToken']['value'])
-    response_3 = request_3.post('/refresh')
+    response_3 = request_3.post('/refresh', headers={
+        'anti-csrf': response_1.headers.get('anti-csrf')})
     cookies_3 = extract_all_cookies(response_3)
 
     request_4 = app.test_client()

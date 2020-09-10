@@ -122,10 +122,14 @@ def get_session(access_token, anti_csrf_token,
         raise_try_refresh_token_exception(response['message'])
 
 
-def refresh_session(refresh_token):
-    response = Querier.get_instance().send_post_request(SESSION_REFRESH, {
+def refresh_session(refresh_token, anti_csrf_token):
+    data = {
         'refreshToken': refresh_token
-    })
+    }
+    if anti_csrf_token is not None:
+        data['antiCsrfToken'] = anti_csrf_token
+
+    response = Querier.get_instance().send_post_request(SESSION_REFRESH, data)
     if response['status'] == 'OK':
         response.pop('status', None)
         return response

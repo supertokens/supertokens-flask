@@ -62,10 +62,10 @@ def teardown_function(f):
 def test_token_theft_detection():
     start_st()
     session = create_new_session('userId', {}, {})
-    refreshed_session = refresh_session(session['refreshToken']['token'])
+    refreshed_session = refresh_session(session['refreshToken']['token'], session['antiCsrfToken'])
     get_session(refreshed_session['accessToken']['token'], refreshed_session['antiCsrfToken'], True)
     try:
-        refresh_session(session['refreshToken']['token'])
+        refresh_session(session['refreshToken']['token'], session['antiCsrfToken'])
         assert False
     except SuperTokensTokenTheftError as e:
         assert e.user_id == 'userId'
@@ -78,10 +78,10 @@ def test_token_theft_detection_with_api_key():
     start_st()
     Querier.init_instance(None, "asckjsbdalvkjbasdlvjbalskdjvbaldkj")
     session = create_new_session('userId', {}, {})
-    refreshed_session = refresh_session(session['refreshToken']['token'])
+    refreshed_session = refresh_session(session['refreshToken']['token'], session['antiCsrfToken'])
     get_session(refreshed_session['accessToken']['token'], refreshed_session['antiCsrfToken'], True)
     try:
-        refresh_session(session['refreshToken']['token'])
+        refresh_session(session['refreshToken']['token'], session['antiCsrfToken'])
         assert False
     except SuperTokensTokenTheftError as e:
         assert e.user_id == 'userId'
@@ -108,7 +108,7 @@ def test_basic_usage_of_sessions():
     get_session(session['accessToken']['token'], session['antiCsrfToken'], True)
     assert not ProcessState.get_service_called()
 
-    refreshed_session_1 = refresh_session(session['refreshToken']['token'])
+    refreshed_session_1 = refresh_session(session['refreshToken']['token'], session['antiCsrfToken'])
     validate(refreshed_session_1, session_with_anti_csrf)
 
     updated_session = get_session(refreshed_session_1['accessToken']['token'], refreshed_session_1['antiCsrfToken'],

@@ -38,7 +38,7 @@ def __manage_cookies_post_response(session, response):
                 response,
                 access_token['token'],
                 access_token['expiry'],
-                access_token['domain'],
+                access_token['domain'] if 'domain' in access_token else None,
                 access_token['cookiePath'],
                 access_token['cookieSecure'],
                 access_token['sameSite']
@@ -49,7 +49,7 @@ def __manage_cookies_post_response(session, response):
                 response,
                 refresh_token['token'],
                 refresh_token['expiry'],
-                refresh_token['domain'],
+                refresh_token['domain'] if 'domain' in refresh_token else None,
                 refresh_token['cookiePath'],
                 refresh_token['cookieSecure'],
                 refresh_token['sameSite']
@@ -60,7 +60,7 @@ def __manage_cookies_post_response(session, response):
                 response,
                 id_refresh_token['token'],
                 id_refresh_token['expiry'],
-                id_refresh_token['domain'],
+                id_refresh_token['domain'] if 'domain' in id_refresh_token else None,
                 id_refresh_token['cookiePath'],
                 id_refresh_token['cookieSecure'],
                 id_refresh_token['sameSite']
@@ -103,32 +103,3 @@ def supertokens_middleware(anti_csrf_check=None):
         anti_csrf_check = None
         return session_verify(func)
     return session_verify
-
-
-# def login_optional(f):
-#     @wraps(f)
-#     def wrapped_function(*args, **kwargs):
-#         if request.method in {'OPTIONS', 'TRACE'}:
-#             return f(*args, **kwargs)
-#         try:
-#             session = get_session(None, False)
-#             g.supertokens_session = session
-#             response = make_response(f(*args, **kwargs))
-#             __manage_cookies_post_response(session, response)
-#             return response
-#         except SuperTokensError:
-#             return f(*args, **kwargs)
-#     return wrapped_function
-
-
-# def supertokens_middleware(f):
-#     @wraps(f)
-#     def wrapped_function(*args, **kwargs):
-#         if request.method != 'POST':
-#             return f(*args, **kwargs)
-#         session = refresh_session(None)
-#         g.supertokens_session = session
-#         response = make_response(f(*args, **kwargs))
-#         __manage_cookies_post_response(session, response)
-#         return response
-#     return wrapped_function

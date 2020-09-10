@@ -18,7 +18,7 @@ from supertokens_flask.constants import (
     HOSTS_CONFIG, ACCESS_TOKEN_PATH_CONFIG, REFRESH_TOKEN_PATH_CONFIG, COOKIE_SAME_SITE_CONFIG, COOKIE_SECURE_CONFIG
 )
 from .utils import (
-    reset, setup_st, clean_st,
+    reset, setup_st, clean_st, start_st,
     extract_all_cookies,
     get_unix_timestamp, TEST_DRIVER_CONFIG_COOKIE_DOMAIN, TEST_DRIVER_CONFIG_ACCESS_TOKEN_PATH,
     TEST_DRIVER_CONFIG_REFRESH_TOKEN_PATH, TEST_DRIVER_CONFIG_COOKIE_SAME_SITE, TEST_DRIVER_CONFIG_COOKIE_SECURE
@@ -47,7 +47,6 @@ def teardown_function(f):
 def app():
     app = Flask(__name__)
     app.config[COOKIE_DOMAIN_CONFIG] = 'supertokens.io'
-    app.config[HOSTS_CONFIG] = 'https://try.supertokens.io'
     supertokens = SuperTokens(app)
 
     def ff(e):
@@ -128,6 +127,7 @@ def driver_config_app():
 
 
 def test_decorators_with_app(app):
+    start_st()
     response_1 = app.test_client().get('/login')
     assert response_1.json == {'userId': 'userId'}
     assert response_1.status_code == 200
@@ -154,7 +154,8 @@ def test_decorators_with_app(app):
         'localhost',
         'sRefreshToken',
         cookies_1['sRefreshToken']['value'])
-    response_3 = request_3.post('/refresh')
+    response_3 = request_3.post('/refresh', headers={
+        'anti-csrf': response_1.headers.get('anti-csrf')})
     assert response_3.json == {'userId': 'userId'}
     assert response_3.status_code == 200
     cookies_3 = extract_all_cookies(response_3)
@@ -171,9 +172,9 @@ def test_decorators_with_app(app):
     assert cookies_3['sAccessToken']['httponly']
     assert cookies_3['sRefreshToken']['httponly']
     assert cookies_3['sIdRefreshToken']['httponly']
-    assert cookies_3['sAccessToken'].get('samesite') == 'None'
-    assert cookies_3['sRefreshToken'].get('samesite') == 'None'
-    assert cookies_3['sIdRefreshToken'].get('samesite') == 'None'
+    assert cookies_3['sAccessToken'].get('samesite') == 'Lax'
+    assert cookies_3['sRefreshToken'].get('samesite') == 'Lax'
+    assert cookies_3['sIdRefreshToken'].get('samesite') == 'Lax'
     assert cookies_3['sAccessToken'].get('secure') is None
     assert cookies_3['sRefreshToken'].get('secure') is None
     assert cookies_3['sIdRefreshToken'].get('secure') is None
@@ -201,7 +202,7 @@ def test_decorators_with_app(app):
     assert cookies_4['sAccessToken']['domain'] == 'supertokens.io'
     assert cookies_4['sAccessToken']['path'] == '/'
     assert cookies_4['sAccessToken']['httponly']
-    assert cookies_4['sAccessToken'].get('samesite') == 'None'
+    assert cookies_4['sAccessToken'].get('samesite') == 'Lax'
     assert cookies_4['sAccessToken'].get('secure') is None
 
     response_5 = app.test_client().options('/info')
@@ -235,7 +236,7 @@ def test_decorators_with_app(app):
 
     response_8 = app.test_client().get('/info')
     assert response_8.json == {'error': 'unauthorised'}
-    assert response_8.status_code == 440
+    assert response_8.status_code == 401
     cookies_8 = extract_all_cookies(response_8)
     assert cookies_8['sAccessToken']['value'] == ''
     assert cookies_8['sRefreshToken']['value'] == ''
@@ -249,9 +250,10 @@ def test_decorators_with_app(app):
         'localhost',
         'sRefreshToken',
         cookies_1['sRefreshToken']['value'])
-    response_9 = request_9.post('/refresh')
+    response_9 = request_9.post('/refresh', headers={
+        'anti-csrf': response_1.headers.get('anti-csrf')})
     assert response_9.json == {'error': 'token theft detected'}
-    assert response_9.status_code == 440
+    assert response_9.status_code == 401
     cookies_9 = extract_all_cookies(response_9)
     assert cookies_9['sAccessToken']['value'] == ''
     assert cookies_9['sRefreshToken']['value'] == ''
@@ -286,7 +288,7 @@ def test_decorators_with_app(app):
         cookies_10['sRefreshToken']['value'])
     response_12 = request_12.post('/refresh')
     assert response_12.json == {'error': 'unauthorised'}
-    assert response_12.status_code == 440
+    assert response_12.status_code == 401
     cookies_12 = extract_all_cookies(response_12)
     assert cookies_12['sAccessToken']['value'] == ''
     assert cookies_12['sRefreshToken']['value'] == ''
@@ -419,7 +421,7 @@ def test_decorators_with_driver_config_app(driver_config_app):
 
     response_8 = driver_config_app.test_client().get('/custom/info')
     assert response_8.json == {'error': 'unauthorised'}
-    assert response_8.status_code == 440
+    assert response_8.status_code == 401
     cookies_8 = extract_all_cookies(response_8)
     assert cookies_8['sAccessToken']['value'] == ''
     assert cookies_8['sRefreshToken']['value'] == ''
@@ -435,7 +437,7 @@ def test_decorators_with_driver_config_app(driver_config_app):
         cookies_1['sRefreshToken']['value'])
     response_9 = request_9.post('/custom/refresh')
     assert response_9.json == {'error': 'token theft detected'}
-    assert response_9.status_code == 440
+    assert response_9.status_code == 401
     cookies_9 = extract_all_cookies(response_9)
     assert cookies_9['sAccessToken']['value'] == ''
     assert cookies_9['sRefreshToken']['value'] == ''
@@ -470,7 +472,7 @@ def test_decorators_with_driver_config_app(driver_config_app):
         cookies_10['sRefreshToken']['value'])
     response_12 = request_12.post('/custom/refresh')
     assert response_12.json == {'error': 'unauthorised'}
-    assert response_12.status_code == 440
+    assert response_12.status_code == 401
     cookies_12 = extract_all_cookies(response_12)
     assert cookies_12['sAccessToken']['value'] == ''
     assert cookies_12['sRefreshToken']['value'] == ''
