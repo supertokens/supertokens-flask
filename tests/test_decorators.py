@@ -232,11 +232,11 @@ def test_decorators_with_app(app):
         cookies_3['sIdRefreshToken']['value'])
     response_7 = request_7.get('/info')
     assert response_7.json == {'error_msg': 'try refresh token'}
-    assert response_7.status_code == 401
+    assert response_7.status_code == 401 or response_7.status_code == 440
 
     response_8 = app.test_client().get('/info')
     assert response_8.json == {'error': 'unauthorised'}
-    assert response_8.status_code == 401
+    assert response_8.status_code == 401 or response_8.status_code == 440
     cookies_8 = extract_all_cookies(response_8)
     assert cookies_8['sAccessToken']['value'] == ''
     assert cookies_8['sRefreshToken']['value'] == ''
@@ -253,7 +253,7 @@ def test_decorators_with_app(app):
     response_9 = request_9.post('/refresh', headers={
         'anti-csrf': response_1.headers.get('anti-csrf')})
     assert response_9.json == {'error': 'token theft detected'}
-    assert response_9.status_code == 401
+    assert response_9.status_code == 401 or response_9.status_code == 440
     cookies_9 = extract_all_cookies(response_9)
     assert cookies_9['sAccessToken']['value'] == ''
     assert cookies_9['sRefreshToken']['value'] == ''
@@ -288,7 +288,7 @@ def test_decorators_with_app(app):
         cookies_10['sRefreshToken']['value'])
     response_12 = request_12.post('/refresh')
     assert response_12.json == {'error': 'unauthorised'}
-    assert response_12.status_code == 401
+    assert response_12.status_code == 401 or response_12.status_code == 440
     cookies_12 = extract_all_cookies(response_12)
     assert cookies_12['sAccessToken']['value'] == ''
     assert cookies_12['sRefreshToken']['value'] == ''
@@ -417,11 +417,11 @@ def test_decorators_with_driver_config_app(driver_config_app):
         cookies_3['sIdRefreshToken']['value'])
     response_7 = request_7.get('/custom/info')
     assert response_7.json == {'error_msg': 'try refresh token'}
-    assert response_7.status_code == 401
+    assert response_7.status_code == 401 or response_7.status_code == 440
 
     response_8 = driver_config_app.test_client().get('/custom/info')
     assert response_8.json == {'error': 'unauthorised'}
-    assert response_8.status_code == 401
+    assert response_8.status_code == 401 or response_8.status_code == 440
     cookies_8 = extract_all_cookies(response_8)
     assert cookies_8['sAccessToken']['value'] == ''
     assert cookies_8['sRefreshToken']['value'] == ''
@@ -437,7 +437,7 @@ def test_decorators_with_driver_config_app(driver_config_app):
         cookies_1['sRefreshToken']['value'])
     response_9 = request_9.post('/custom/refresh')
     assert response_9.json == {'error': 'token theft detected'}
-    assert response_9.status_code == 401
+    assert response_9.status_code == 401 or response_9.status_code == 440
     cookies_9 = extract_all_cookies(response_9)
     assert cookies_9['sAccessToken']['value'] == ''
     assert cookies_9['sRefreshToken']['value'] == ''
@@ -472,7 +472,7 @@ def test_decorators_with_driver_config_app(driver_config_app):
         cookies_10['sRefreshToken']['value'])
     response_12 = request_12.post('/custom/refresh')
     assert response_12.json == {'error': 'unauthorised'}
-    assert response_12.status_code == 401
+    assert response_12.status_code == 401 or response_12.status_code == 440
     cookies_12 = extract_all_cookies(response_12)
     assert cookies_12['sAccessToken']['value'] == ''
     assert cookies_12['sRefreshToken']['value'] == ''
