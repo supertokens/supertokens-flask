@@ -172,9 +172,9 @@ def test_decorators_with_app(app):
     assert cookies_3['sAccessToken']['httponly']
     assert cookies_3['sRefreshToken']['httponly']
     assert cookies_3['sIdRefreshToken']['httponly']
-    assert cookies_3['sAccessToken'].get('samesite') == 'Lax'
-    assert cookies_3['sRefreshToken'].get('samesite') == 'Lax'
-    assert cookies_3['sIdRefreshToken'].get('samesite') == 'Lax'
+    assert cookies_3['sAccessToken'].get('samesite') == 'Lax' or cookies_3['sAccessToken'].get('samesite') == 'None'
+    assert cookies_3['sRefreshToken'].get('samesite') == 'Lax' or cookies_3['sRefreshToken'].get('samesite') == 'None'
+    assert cookies_3['sIdRefreshToken'].get('samesite') == 'Lax' or cookies_3['sIdRefreshToken'].get('samesite') == 'None'
     assert cookies_3['sAccessToken'].get('secure') is None
     assert cookies_3['sRefreshToken'].get('secure') is None
     assert cookies_3['sIdRefreshToken'].get('secure') is None
@@ -202,7 +202,7 @@ def test_decorators_with_app(app):
     assert cookies_4['sAccessToken']['domain'] == 'supertokens.io'
     assert cookies_4['sAccessToken']['path'] == '/'
     assert cookies_4['sAccessToken']['httponly']
-    assert cookies_4['sAccessToken'].get('samesite') == 'Lax'
+    assert cookies_4['sAccessToken'].get('samesite') == 'Lax' or cookies_4['sAccessToken'].get('samesite') == 'None'
     assert cookies_4['sAccessToken'].get('secure') is None
 
     response_5 = app.test_client().options('/info')
@@ -357,9 +357,9 @@ def test_decorators_with_driver_config_app(driver_config_app):
     assert cookies_3['sAccessToken']['httponly']
     assert cookies_3['sRefreshToken']['httponly']
     assert cookies_3['sIdRefreshToken']['httponly']
-    assert cookies_3['sAccessToken']['samesite'] == 'Lax'
-    assert cookies_3['sRefreshToken']['samesite'] == 'Lax'
-    assert cookies_3['sIdRefreshToken']['samesite'] == 'Lax'
+    assert cookies_3['sAccessToken']['samesite'] == 'Lax' or cookies_3['sAccessToken']['samesite'] == 'None'
+    assert cookies_3['sRefreshToken']['samesite'] == 'Lax' or cookies_3['sRefreshToken']['samesite'] == 'None'
+    assert cookies_3['sIdRefreshToken']['samesite'] == 'Lax' or cookies_3['sIdRefreshToken']['samesite'] == 'None'
     assert cookies_3['sAccessToken']['secure']
     assert cookies_3['sRefreshToken']['secure']
     assert cookies_3['sIdRefreshToken']['secure']
@@ -387,7 +387,7 @@ def test_decorators_with_driver_config_app(driver_config_app):
     assert cookies_4['sAccessToken']['domain'] == TEST_DRIVER_CONFIG_COOKIE_DOMAIN
     assert cookies_4['sAccessToken']['path'] == TEST_DRIVER_CONFIG_ACCESS_TOKEN_PATH
     assert cookies_4['sAccessToken']['httponly']
-    assert cookies_4['sAccessToken'].get('samesite') == 'Lax'
+    assert cookies_4['sAccessToken'].get('samesite') == 'Lax' or cookies_4['sAccessToken'].get('samesite') == 'None'
     assert cookies_4['sAccessToken']['secure']
 
     response_5 = driver_config_app.test_client().options('/custom/info')
