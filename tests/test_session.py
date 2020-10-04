@@ -19,6 +19,7 @@ from .utils import (
     reset, setup_st, clean_st, start_st, set_key_value_in_config,
     TEST_ENABLE_ANTI_CSRF_CONFIG_KEY
 )
+from supertokens_flask.utils import find_max_version
 from supertokens_flask.querier import Querier
 from supertokens_flask.session_helper import (
     get_all_session_handles_for_user,
@@ -94,7 +95,7 @@ def test_query_without_api_key():
     start_st()
     try:
         version = Querier.get_instance().get_api_version()
-        if version != "2.0" and "com-" in environ['SUPERTOKENS_PATH']:
+        if (version != "2.0" and "com-" in environ['SUPERTOKENS_PATH']) or (find_max_version(version, "2.3") == version and "supertokens-" in environ['SUPERTOKENS_PATH']):
             assert False
     except SuperTokensGeneralError as e:
         assert "Invalid API key" in str(e)
