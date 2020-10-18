@@ -32,6 +32,7 @@ from supertokens_flask.constants import (
 from supertokens_flask.device_info import DeviceInfo
 from supertokens_flask.exceptions import raise_general_exception
 from supertokens_flask.handshake_info import HandshakeInfo
+from tests import get_cookie_from_response
 from urllib.parse import quote, unquote
 from os import environ
 
@@ -117,6 +118,8 @@ def get_cookie(request, key):
 
 def set_cookie(response, key, value, expires, path,
                domain, secure, http_only, same_site):
+    if get_cookie_from_response(response, key) is not None:
+        response.set_cookie(key, expires=0)
     if CookieConfig.get_instance().cookie_domain is not None:
         domain = CookieConfig.get_instance().cookie_domain
     if CookieConfig.get_instance().cookie_secure is not None:
